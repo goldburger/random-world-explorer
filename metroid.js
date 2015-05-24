@@ -4,18 +4,14 @@ var gl;
 var program;
 var texture;
 
-var color, colorLoc;
-var modelTransform, modelLoc;
-var cameraTransform, cameraLoc;
-var projectionTransform, projectionLoc;
+var colorLoc, modelLoc, cameraLoc, projectionLoc;
+var positionLoc, texCoordLoc, useTextureLoc;
+var cameraTransform;
 var near = 0.1;
 var far = 1000;
 var startingCamera;
 
 var vBufferCrosshair;
-
-var positionLoc, texCoordLoc;
-var useTextureLoc;
 
 var vertices = [
 	vec4( -.1, 0, 0, 1.0 ),
@@ -68,7 +64,6 @@ function configureTexture(image)
     gl.generateMipmap( gl.TEXTURE_2D );
     gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR );
     gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR );    
-    gl.uniform1i(gl.getUniformLocation(program, "texture"), 0);
 }
 
 window.onload = function init()
@@ -103,7 +98,7 @@ window.onload = function init()
     projectionLoc = gl.getUniformLocation( program, "projectionTransform" );
 	useTextureLoc = gl.getUniformLocation(program, "useTexture");
 	
-	startingCamera = mult(translate(0, 0, -20), mat4());
+	startingCamera = mult(translate(0, 0, -5), mat4());
 	cameraTransform = startingCamera;
 
 	document.onkeydown = keyboardEvent;
@@ -121,11 +116,9 @@ function drawCrosshair()
 	gl.uniformMatrix4fv(modelLoc, false, flatten(mat4()));
 	gl.uniformMatrix4fv(cameraLoc, false, flatten(startingCamera));
 	
-	projectionTransform = ortho(-1, 1, -1, 1, near, far);
-    gl.uniformMatrix4fv(projectionLoc, false, flatten(projectionTransform));
-	
-	color = [ 0.0, 0.0, 0.0, 1.0 ];
-	gl.uniform4fv(colorLoc, color);
+    gl.uniformMatrix4fv(projectionLoc, false, flatten(ortho(-1, 1, -1, 1, near, far)));
+
+	gl.uniform4fv(colorLoc, [ 0.0, 0.0, 0.0, 1.0 ]);
 	gl.uniform1i(useTextureLoc, false);
 	
 	gl.drawArrays( gl.LINES, 0, 4);
