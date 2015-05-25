@@ -2,7 +2,6 @@ var canvas;
 var gl;
 
 var program;
-var texture;
 
 var colorLoc, modelLoc, cameraLoc, projectionLoc;
 var positionLoc, texCoordLoc, useTextureLoc;
@@ -50,20 +49,46 @@ function keyboardEvent(event)
 		case 82: // R key
 			cameraTransform = startingCamera;
 			break;
+		
+		case 87: // W
+			cannonAltitude++;
+			break;
+		case 83: // S
+			cannonAltitude--;
+			break;
+		case 65: // A
+			cannonAzimuth++;
+			break;
+		case 68: // D
+			cannonAzimuth--;
+			break;
+		
 		default:
 			break;
 	}
 }
 
-function configureTexture(image)
+function initTexture(image, index)
 {
-    texture = gl.createTexture();
-    gl.bindTexture( gl.TEXTURE_2D, texture );
+    var curTexture = gl.createTexture();
+	switch (index)
+	{
+		case 0:
+			gl.activeTexture(gl.TEXTURE0);
+			break;
+		case 1:
+			gl.activeTexture(gl.TEXTURE1);
+			break;
+		case 2:
+			gl.activeTexture(gl.TEXTURE2);
+			break;
+	}
+    gl.bindTexture( gl.TEXTURE_2D, curTexture );
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image );
     gl.generateMipmap( gl.TEXTURE_2D );
     gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR );
-    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR );    
+    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR );
 }
 
 window.onload = function init()

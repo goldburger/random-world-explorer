@@ -1,6 +1,9 @@
 var iBufferHUD, vBufferHUD, tBufferHUD;
 
-var bottomCone, middleCone;
+var cannonDefault;
+var cannonAzimuth, cannonAltitude;
+
+var bottomCone, middleCone, ringCone, topCone;
 
 function cone(partID)
 {
@@ -84,9 +87,8 @@ cone.prototype.createTruncatedCone = function (bottomRadius, topRadius, height,
 				case 1: // Middle segment
 					this.textureCoords.push(vec2((ii / radialSubdivisions) * 2 - .1, v ));
 					break;
-				case 2: // Ring segment
-					break;
-				case 3: // Top segment
+				case 2: // Top segments
+					this.textureCoords.push(vec2((ii / radialSubdivisions) * 2 - .1, v/2 + 0.5 ));
 					break;
 			}
 		}
@@ -118,7 +120,7 @@ cone.prototype.setupBuffers = function()
     gl.bufferData( gl.ARRAY_BUFFER, flatten(this.textureCoords), gl.STATIC_DRAW );
 }
 
-cone.prototype.drawCone = function(modelTransform, texName, texUnit)
+cone.prototype.drawCone = function(modelTransform)
 {
 	gl.bindBuffer( gl.ARRAY_BUFFER, this.vertexBuffer );
     gl.vertexAttribPointer( positionLoc, 4, gl.FLOAT, false, 0, 0 );
@@ -132,8 +134,6 @@ cone.prototype.drawCone = function(modelTransform, texName, texUnit)
 	gl.uniformMatrix4fv(cameraLoc, false, flatten(cameraTransform));
     gl.uniformMatrix4fv(projectionLoc, false, flatten(perspective( 45.0, canvas.width/canvas.height, near, far )));
 	
-    configureTexture( document.getElementById(texName) );
-    gl.uniform1i(gl.getUniformLocation(program, texName), texUnit);
 	gl.uniform4fv(colorLoc, [ 1.0, 1.0, 1.0, 1.0 ]);
 	gl.uniform1i(useTextureLoc, true);
 
@@ -150,42 +150,70 @@ function initCannon()
 	bottomCone = new cone(0);
 	var firstRadius = 2.75;
 	var secondRadius = 2.25;
-	var bottomHeight = 7;
-	bottomCone.createTruncatedCone(firstRadius, secondRadius, bottomHeight, 15, 5, false, false, 0);
+	bottomCone.createTruncatedCone(firstRadius, secondRadius, 7, 15, 5, true, false);
 	bottomCone.setupBuffers();
 	
 	middleCone = new cone(1);
 	var thirdRadius = 1.9275;
-	var middleHeight = 4.5;
-	middleCone.createTruncatedCone(secondRadius, thirdRadius, middleHeight, 15, 5, false, false, 1);
+	middleCone.createTruncatedCone(secondRadius, thirdRadius, 4.5, 15, 5, false, false);
 	middleCone.setupBuffers();
+	
+	ringCone = new cone(2);
+	var fourthRadius = 1.6;
+	ringCone.createTruncatedCone(thirdRadius, 1.6, 0.5, 15, 5, false, false);
+	ringCone.setupBuffers();
+	
+	topCone = new cone(2);
+	topCone.createTruncatedCone(fourthRadius, 1.45, 2, 15, 5, false, true);
+	topCone.setupBuffers();
+	
+	cannonDefault = mat4();
+	cannonDefault = mult(cannonDefault, translate(2.8, -2.9, 0));
+	cannonDefault = mult(cannonDefault, rotate(-90, vec3(1, 0, 0)));
+	cannonAzimuth = 15;
+	cannonAltitude = 20;
+	
+    initTexture(document.getElementById("texImage2"), 1);
+    initTexture(document.getElementById("texImage3"), 2);
 }
 
 function drawCannon()
 {
-	var defaultPos = mat4();
-	defaultPos = mult(defaultPos, translate(2.2, -2.2, 0));
-	defaultPos = mult(defaultPos, rotate(-70, vec3(1, 0, 0)));
-	defaultPos = mult(defaultPos, rotate(15, vec3(0, 0, 1)));
+	var cannonTransform = cannonDefault;
+	cannonTransform = mult(cannonTransform, rotate(cannonAzimuth, vec3(0, 0, 1)));
+	cannonTransform = mult(cannonTransform, rotate(cannonAltitude, vec3(1, 0, 0)));
 	
-	var modelTransform = mat4();
-
-	modelTransform = mult(modelTransform, defaultPos);
-	modelTransform = mult( modelTransform, rotate(180 + 72, vec3(0, 1, 0)) ); // Center texture
-	modelTransform = mult( modelTransform, scale(0.40, 0.40, 0.40) );
+	var adjust = mult(mat4(), rotate(180 + 72, vec3(0, 1, 0)));
+	adjust = mult(adjust, scale(0.40, 0.40, 0.40));
 	
-	bottomCone.drawCone(modelTransform, "texImage2", 1);
+	// Bottom
+	modelTransform = mult(mat4(), cannonTransform);
+	modelTransform = mult(modelTransform, adjust);
+	modelTransform = mult(modelTransform, translate(0, 1.4, 0));
+    gl.uniform1i(gl.getUniformLocation(program, "texture"), 1);
+	bottomCone.drawCone(modelTransform);
 	
-	modelTransform = mat4();
+	// Middle
+	modelTransform = mult(mat4(), cannonTransform);
+	modelTransform = mult(modelTransform, adjust);
+	modelTransform = mult(modelTransform, translate(0, 7.15, 0));
+    gl.uniform1i(gl.getUniformLocation(program, "texture"), 2);
+	middleCone.drawCone(modelTransform);
 	
-	modelTransform = mult(modelTransform, defaultPos);
+	// Ring
+	modelTransform = mult(mat4(), cannonTransform);
+	modelTransform = mult(modelTransform, adjust);
+	modelTransform = mult(modelTransform, translate(0, 9.65, 0));
+	ringCone.drawCone(modelTransform);
 	
-	modelTransform = mult( modelTransform, rotate(180 + 72, vec3(0, 1, 0)) );
-	modelTransform = mult( modelTransform, scale(0.40, 0.40, 0.40) );
-	modelTransform = mult(modelTransform, translate(0, 5.75, 0));
-	
-	middleCone.drawCone(modelTransform, "texImage3", 2);
+	// Top
+	modelTransform = mult(mat4(), cannonTransform);
+	modelTransform = mult(modelTransform, adjust);
+	modelTransform = mult(modelTransform, translate(0, 10.9, 0));
+	topCone.drawCone(modelTransform);
 }
+
+var texHUD;
 
 function initHUD()
 {
@@ -219,6 +247,8 @@ function initHUD()
     tBufferHUD = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, tBufferHUD );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(texCoord), gl.STATIC_DRAW );
+	
+    initTexture(document.getElementById("texImage"), 0);
 }
 
 function drawHUD()
@@ -236,8 +266,8 @@ function drawHUD()
 	var projectionTransform = ortho(-1, 1, -1, 1, near, far);
     gl.uniformMatrix4fv(projectionLoc, false, flatten(projectionTransform));
 	
-    configureTexture( document.getElementById("texImage") );
-    gl.uniform1i(gl.getUniformLocation(program, "texImage"), 0);
+    gl.uniform1i(gl.getUniformLocation(program, "texture"), 0);
+	
 	gl.uniform4fv(colorLoc, [ 1.0, 1.0, 1.0, 1.0 ]);
 	gl.uniform1i(useTextureLoc, true);
 
