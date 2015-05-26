@@ -2,6 +2,7 @@ var canvas;
 var gl;
 
 var program;
+var freeAim = false;
 
 var colorLoc, modelLoc, cameraLoc, projectionLoc;
 var positionLoc, texCoordLoc, useTextureLoc;
@@ -19,7 +20,7 @@ var vertices = [
 	vec4( 0, -.15, 0, 1.0 )
 ];
 
-function keyboardEvent(event)
+function keyPress(event)
 {
 	switch (event.keyCode){
 		case 37: // Left arrow key
@@ -91,6 +92,49 @@ function initTexture(image, index)
     gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR );
 }
 
+function enableAiming(event)
+{
+	freeAim = true;
+	aim(event);
+}
+
+function aim(event)
+{
+	if (freeAim == true)
+	{
+		var x = event.clientX;
+		var y = event.clientY;
+		if (x < canvas.width/10)
+		{
+			// Change heading left; TBD
+		}
+		else if (x <= canvas.width * 9/10)
+		{
+			x -= canvas.width/10;
+			x = x / canvas.width * 1.25 * -100 + 70;
+			cannonAzimuth = x;
+		}
+		else
+		{
+			// Change heading right; TBD
+		}
+		if (y < canvas.height/8)
+		{
+			// Change vertical angle up; TBD
+		}
+		else if (y < canvas.height * 7/8)
+		{
+			y -= canvas.height/8;
+			y = y / canvas.height * 4/3 * -50 + 50;
+			cannonAltitude = y;
+		}
+		else
+		{
+			// Change vertical angle down; TBD
+		}
+	}
+}
+
 window.onload = function init()
 {
     canvas = document.getElementById( "gl-canvas" );
@@ -109,6 +153,7 @@ window.onload = function init()
     gl.enableVertexAttribArray( positionLoc );
 	
 	texCoordLoc = gl.getAttribLocation( program, "vTexCoord" );
+    gl.enableVertexAttribArray( texCoordLoc );
 
     vBufferCrosshair = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, vBufferCrosshair );
@@ -126,7 +171,10 @@ window.onload = function init()
 	startingCamera = mult(translate(0, 0, -5), mat4());
 	cameraTransform = startingCamera;
 
-	document.onkeydown = keyboardEvent;
+	document.onkeydown = keyPress;
+	
+	canvas.onclick = enableAiming;
+	canvas.onmousemove = aim;
 	
     render();
 }
@@ -155,7 +203,7 @@ function render()
 {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
-	drawCrosshair();
+	//drawCrosshair();
 
 	drawCannon();
 	drawHUD();

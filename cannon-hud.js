@@ -170,8 +170,8 @@ function initCannon()
 	cannonDefault = mat4();
 	cannonDefault = mult(cannonDefault, translate(2.8, -2.9, 0));
 	cannonDefault = mult(cannonDefault, rotate(-90, vec3(1, 0, 0)));
-	cannonAzimuth = 15;
-	cannonAltitude = 20;
+	cannonAzimuth = 20;
+	cannonAltitude = 25;
 	
     initTexture(document.getElementById("texImage2"), 1);
     initTexture(document.getElementById("texImage3"), 2);
