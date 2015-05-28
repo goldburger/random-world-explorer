@@ -7,7 +7,6 @@ function initTexture() {
     mudTexture.image.onload = function () {
         handleLoadedTexture(mudTexture)
     };
-
     mudTexture.image.src = "mud.jpg";
 }
 

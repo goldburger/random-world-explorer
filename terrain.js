@@ -1,89 +1,74 @@
-// Resource: https://gist.github.com/banksean/304522
 
-var SimplexNoise = function(r) {
-    if (r == undefined) r = Math;
-    this.grad3 = [[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],
-        [1,0,1],[-1,0,1],[1,0,-1],[-1,0,-1],
-        [0,1,1],[0,-1,1],[0,1,-1],[0,-1,-1]];
-    this.p = [];
-    for (var i=0; i<256; i++) {
-        this.p[i] = Math.floor(Math.random()*256);
+var terrainVertexPositionBuffer = null;
+var terrainVertexTextureCoordBuffer = null;
+var terrainIndexBuffer = null;
+
+var VERTEX_COUNT = 256;
+var SIZE = 800;
+
+var count = VERTEX_COUNT * VERTEX_COUNT;
+var vertices = new Array(count * 3);
+var normals = new Array(count * 3);
+var textureCoords = new Array(count*2);
+var indices = new Array(6*(VERTEX_COUNT-1)*(VERTEX_COUNT-1));
+
+var simplexTerrain = new SimplexNoise(12345);
+
+function loadTerrain() {
+
+    var vertexPointer = 0;
+    for(var i=0;i<VERTEX_COUNT;i++){
+        for(var j=0;j<VERTEX_COUNT;j++){
+            vertices[vertexPointer*3] = j/(VERTEX_COUNT - 1.0) * SIZE;
+            vertices[vertexPointer*3+1] = simplexTerrain.noise(j,i);                    // y = height
+            vertices[vertexPointer*3+2] = i/(VERTEX_COUNT - 1.0) * SIZE;
+
+            // Calculate normal
+            // vec3f normal = calculateNormal(j, i);
+
+            normals[vertexPointer*3] = 0;       // normal.x
+            normals[vertexPointer*3+1] = 1;     // normal.y
+            normals[vertexPointer*3+2] = 0;     // normal.z
+            textureCoords[vertexPointer*2] = j/(VERTEX_COUNT - 1.0);
+            textureCoords[vertexPointer*2+1] = i/(VERTEX_COUNT - 1.0);
+            vertexPointer++;
+        }
     }
-    // To remove the need for index wrapping, double the permutation table length
-    this.perm = [];
-    for(var i=0; i<512; i++) {
-        this.perm[i]=this.p[i & 255];
+    var pointer = 0;
+    for(var gz=0;gz<VERTEX_COUNT-1;gz++){
+        for(var gx=0;gx<VERTEX_COUNT-1;gx++){
+            var topLeft = (gz*VERTEX_COUNT)+gx;
+            var topRight = topLeft + 1;
+            var bottomLeft = ((gz+1)*VERTEX_COUNT)+gx;
+            var bottomRight = bottomLeft + 1;
+            indices[pointer++] = topLeft;
+            indices[pointer++] = bottomLeft;
+            indices[pointer++] = topRight;
+            indices[pointer++] = topRight;
+            indices[pointer++] = bottomLeft;
+            indices[pointer++] = bottomRight;
+        }
     }
 
-    // A lookup table to traverse the simplex around a given point in 4D.
-    // Details can be found where this table is used, in the 4D noise method.
-    this.simplex = [
-        [0,1,2,3],[0,1,3,2],[0,0,0,0],[0,2,3,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[1,2,3,0],
-        [0,2,1,3],[0,0,0,0],[0,3,1,2],[0,3,2,1],[0,0,0,0],[0,0,0,0],[0,0,0,0],[1,3,2,0],
-        [0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],
-        [1,2,0,3],[0,0,0,0],[1,3,0,2],[0,0,0,0],[0,0,0,0],[0,0,0,0],[2,3,0,1],[2,3,1,0],
-        [1,0,2,3],[1,0,3,2],[0,0,0,0],[0,0,0,0],[0,0,0,0],[2,0,3,1],[0,0,0,0],[2,1,3,0],
-        [0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],
-        [2,0,1,3],[0,0,0,0],[0,0,0,0],[0,0,0,0],[3,0,1,2],[3,0,2,1],[0,0,0,0],[3,1,2,0],
-        [2,1,0,3],[0,0,0,0],[0,0,0,0],[0,0,0,0],[3,1,0,2],[0,0,0,0],[3,2,0,1],[3,2,1,0]];
-};
+    terrainVertexPositionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, terrainVertexPositionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    terrainVertexPositionBuffer.itemSize = 3;
+    terrainVertexPositionBuffer.numItems = count;
 
-SimplexNoise.prototype.dot = function(g, x, y) {
-    return g[0]*x + g[1]*y;
-};
+    terrainVertexTextureCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, terrainVertexTextureCoordBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW);
+    terrainVertexTextureCoordBuffer.itemSize = 2;
+    terrainVertexTextureCoordBuffer.numItems = count;
 
-SimplexNoise.prototype.noise = function(xin, yin) {
-    var n0, n1, n2; // Noise contributions from the three corners
-    // Skew the input space to determine which simplex cell we're in
-    var F2 = 0.5*(Math.sqrt(3.0)-1.0);
-    var s = (xin+yin)*F2; // Hairy factor for 2D
-    var i = Math.floor(xin+s);
-    var j = Math.floor(yin+s);
-    var G2 = (3.0-Math.sqrt(3.0))/6.0;
-    var t = (i+j)*G2;
-    var X0 = i-t; // Unskew the cell origin back to (x,y) space
-    var Y0 = j-t;
-    var x0 = xin-X0; // The x,y distances from the cell origin
-    var y0 = yin-Y0;
-    // For the 2D case, the simplex shape is an equilateral triangle.
-    // Determine which simplex we are in.
-    var i1, j1; // Offsets for second (middle) corner of simplex in (i,j) coords
-    if(x0>y0) {i1=1; j1=0;} // lower triangle, XY order: (0,0)->(1,0)->(1,1)
-    else {i1=0; j1=1;}      // upper triangle, YX order: (0,0)->(0,1)->(1,1)
-    // A step of (1,0) in (i,j) means a step of (1-c,-c) in (x,y), and
-    // a step of (0,1) in (i,j) means a step of (-c,1-c) in (x,y), where
-    // c = (3-sqrt(3))/6
-    var x1 = x0 - i1 + G2; // Offsets for middle corner in (x,y) unskewed coords
-    var y1 = y0 - j1 + G2;
-    var x2 = x0 - 1.0 + 2.0 * G2; // Offsets for last corner in (x,y) unskewed coords
-    var y2 = y0 - 1.0 + 2.0 * G2;
-    // Work out the hashed gradient indices of the three simplex corners
-    var ii = i & 255;
-    var jj = j & 255;
-    var gi0 = this.perm[ii+this.perm[jj]] % 12;
-    var gi1 = this.perm[ii+i1+this.perm[jj+j1]] % 12;
-    var gi2 = this.perm[ii+1+this.perm[jj+1]] % 12;
-    // Calculate the contribution from the three corners
-    var t0 = 0.5 - x0*x0-y0*y0;
-    if(t0<0) n0 = 0.0;
-    else {
-        t0 *= t0;
-        n0 = t0 * t0 * this.dot(this.grad3[gi0], x0, y0);  // (x,y) of grad3 used for 2D gradient
-    }
-    var t1 = 0.5 - x1*x1-y1*y1;
-    if(t1<0) n1 = 0.0;
-    else {
-        t1 *= t1;
-        n1 = t1 * t1 * this.dot(this.grad3[gi1], x1, y1);
-    }
-    var t2 = 0.5 - x2*x2-y2*y2;
-    if(t2<0) n2 = 0.0;
-    else {
-        t2 *= t2;
-        n2 = t2 * t2 * this.dot(this.grad3[gi2], x2, y2);
-    }
-    // Add contributions from each corner to get the final noise value.
-    // The result is scaled to return values in the interval [-1,1].
-    return 70.0 * (n0 + n1 + n2);
-};
+    terrainIndexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, terrainIndexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+    terrainIndexBuffer.itemSize = 1;
+    terrainIndexBuffer.numItems = (VERTEX_COUNT-1)*(VERTEX_COUNT-1);
+
+    document.getElementById("loadingtext").textContent = "";
+}
+
 

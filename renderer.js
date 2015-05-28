@@ -32,7 +32,7 @@ function webGLStart() {
 
     initTexture();
 
-    loadWorld();
+    loadTerrain();
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.enable(gl.DEPTH_TEST);
@@ -40,7 +40,7 @@ function webGLStart() {
     document.onkeydown = handleKeyDown;
     document.onkeyup = handleKeyUp;
 
-    tick();
+    tick(); // render with movement
 }
 
 function initGL(canvas) {
@@ -118,7 +118,7 @@ function initShaders() {
 function tick() {
     requestAnimFrame(tick);
     handleKeys();
-    drawScene();
+    render();
     animate();
 }
 
@@ -181,11 +181,11 @@ function animate() {
     lastTime = timeNow;
 }
 
-function drawScene() {
+function render() {
     gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    if (worldVertexTextureCoordBuffer == null || worldVertexPositionBuffer == null) {
+    if (terrainVertexTextureCoordBuffer == null || terrainVertexPositionBuffer == null) {
         return;
     }
 
@@ -201,15 +201,15 @@ function drawScene() {
     gl.bindTexture(gl.TEXTURE_2D, mudTexture);
     gl.uniform1i(shaderProgram.samplerUniform, 0);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, worldVertexTextureCoordBuffer);
-    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, worldVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, terrainVertexTextureCoordBuffer);
+    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, terrainVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, worldVertexPositionBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, worldVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, terrainVertexPositionBuffer);
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, terrainVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
     setMatrixUniforms();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, worldIndexBuffer);
-    gl.drawElements(gl.TRIANGLE_STRIP, worldIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, terrainIndexBuffer);
+    gl.drawElements(gl.TRIANGLE_STRIP, terrainIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 }
 
 // Helper functions
