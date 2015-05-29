@@ -1,3 +1,5 @@
+// Reference used to generate the terrain:
+// https://www.youtube.com/watch?v=yNYwZMmgTJk&list=PLRIWtICgwaX0u7Rf9zkZhLoLuZVfUksDP&index=14
 
 var terrainVertexPositionBuffer = null;
 var terrainVertexTextureCoordBuffer = null;
@@ -14,26 +16,31 @@ var indices = new Array(6*(VERTEX_COUNT-1)*(VERTEX_COUNT-1));
 
 var simplexTerrain = new SimplexNoise(12345);
 
-function loadTerrain() {
+function initTerrain() {
+    var height;
 
+    // Generates the terrain vertices and texture coordinates so that
+    // we can load the mesh in as triangle strips
     var vertexPointer = 0;
     for(var i=0;i<VERTEX_COUNT;i++){
         for(var j=0;j<VERTEX_COUNT;j++){
             vertices[vertexPointer*3] = j/(VERTEX_COUNT - 1.0) * SIZE;
-            vertices[vertexPointer*3+1] = simplexTerrain.noise(j,i);                    // y = height
-            vertices[vertexPointer*3+2] = i/(VERTEX_COUNT - 1.0) * SIZE;
 
-            // Calculate normal
-            // vec3f normal = calculateNormal(j, i);
+            height = simplexTerrain.noise(j,i);
+            vertices[vertexPointer*3+1] = height;                  // y = height
+            vertices[vertexPointer*3+2] = i/(VERTEX_COUNT - 1.0) * SIZE;
 
             normals[vertexPointer*3] = 0;       // normal.x
             normals[vertexPointer*3+1] = 1;     // normal.y
             normals[vertexPointer*3+2] = 0;     // normal.z
+
             textureCoords[vertexPointer*2] = j/(VERTEX_COUNT - 1.0);
             textureCoords[vertexPointer*2+1] = i/(VERTEX_COUNT - 1.0);
             vertexPointer++;
         }
     }
+
+    // Indices for the terrain vertices => triangle strips
     var pointer = 0;
     for(var gz=0;gz<VERTEX_COUNT-1;gz++){
         for(var gx=0;gx<VERTEX_COUNT-1;gx++){
@@ -70,5 +77,3 @@ function loadTerrain() {
 
     document.getElementById("loadingtext").textContent = "";
 }
-
-

@@ -24,7 +24,7 @@
         gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
         vTextureCoord = aTextureCoord * 40.0;
     }
-</script>
+</script> <!-- End vertex shader -->
 
 <script id="fragment-shader" type="x-shader/x-fragment">
     precision mediump float;
@@ -49,19 +49,13 @@
 </style>
 </head>
 
-
 <body onload="webGLStart();">
 
     <canvas id="gl-canvas" style="border: none;" width="500" height="500"></canvas>
-
     <div id="loadingtext">Loading world...</div>
 
-    <br/>
-    Use the cursor keys or WASD to run around, and <code>Page Up</code>/<code>Page Down</code> to
-look up and down.
+    <br/>Use the cursor keys or WASD to run around, and <code>Page Up</code>/<code>Page Down</code> to look up and down.
 
-    <br/>
-    <br/>
 </body>
 
 </html>

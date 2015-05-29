@@ -25,14 +25,14 @@ var speed = 0;
 var currentlyPressedKeys = {};
 
 // Called onload of html file
-function webGLStart() {
+function webGLStart() {                                         // main game loop
     var canvas = document.getElementById("gl-canvas");
     initGL(canvas);
-    initShaders();
+    initShaders();                                              // Bind attributes/uniforms
 
     initTexture();
 
-    loadTerrain();
+    initTerrain();
 
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.enable(gl.DEPTH_TEST);
@@ -54,7 +54,6 @@ function initGL(canvas) {
         alert("Could not initialise WebGL, sorry :-(");
     }
 }
-
 function getShader(gl, id) {
     var shaderScript = document.getElementById(id);
     if (!shaderScript) {
@@ -89,6 +88,7 @@ function getShader(gl, id) {
 
     return shader;
 }
+
 function initShaders() {
     var fragmentShader = getShader(gl, "fragment-shader");
     var vertexShader = getShader(gl, "vertex-shader");
@@ -104,15 +104,16 @@ function initShaders() {
 
     gl.useProgram(shaderProgram);
 
-    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-    gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+    // Get attribute and uniform locations
+    shaderProgram.vertexPositionAttributeLoc = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+    gl.enableVertexAttribArray(shaderProgram.vertexPositionAttributeLoc);
 
-    shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
-    gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+    shaderProgram.textureCoordAttributeLoc = gl.getAttribLocation(shaderProgram, "aTextureCoord");
+    gl.enableVertexAttribArray(shaderProgram.textureCoordAttributeLoc);
 
-    shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-    shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
-    shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
+    shaderProgram.pMatrixUniformLoc = gl.getUniformLocation(shaderProgram, "uPMatrix");
+    shaderProgram.mvMatrixUniformLoc = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+    shaderProgram.samplerUniformLoc = gl.getUniformLocation(shaderProgram, "uSampler");
 }
 
 function tick() {
@@ -188,8 +189,11 @@ function render() {
     if (terrainVertexTextureCoordBuffer == null || terrainVertexPositionBuffer == null) {
         return;
     }
-
     mat4.perspective(pMatrix, 70, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);
+
+    // Render player/cannon
+
+
 
     mat4.identity(mvMatrix);
     mat4.translate(mvMatrix, mvMatrix, [0,-1,-1]);
@@ -197,17 +201,21 @@ function render() {
     mat4.rotate(mvMatrix, mvMatrix, degToRad(-yaw), [0, 1, 0]);
     mat4.translate(mvMatrix, mvMatrix, [-xPos, -yPos, -zPos]);
 
+    // Render terrain
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, mudTexture);
-    gl.uniform1i(shaderProgram.samplerUniform, 0);
+    gl.uniform1i(shaderProgram.samplerUniformLoc, 0);
 
+    // Load attributes or uniform up to shader
     gl.bindBuffer(gl.ARRAY_BUFFER, terrainVertexTextureCoordBuffer);
-    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, terrainVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shaderProgram.textureCoordAttributeLoc, terrainVertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, terrainVertexPositionBuffer);
-    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, terrainVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttributeLoc, terrainVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-    setMatrixUniforms();
+
+    loadMatrixUniforms(pMatrix, mvMatrix);
+
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, terrainIndexBuffer);
     gl.drawElements(gl.TRIANGLE_STRIP, terrainIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);
 }
@@ -226,9 +234,19 @@ function mvPopMatrix() {
     mvMatrix = mvMatrixStack.pop();
 }
 
-function setMatrixUniforms() {
-    gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
-    gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
+function loadMatrixUniforms (pMatrix, mvMatrix) {
+    gl.uniformMatrix4fv(shaderProgram.pMatrixUniformLoc, false, pMatrix);
+    gl.uniformMatrix4fv(shaderProgram.mvMatrixUniformLoc, false, mvMatrix);
+}
+
+function createTransformationMatrix (translation, rotX, rotY, rotZ, scale) {
+    var matrix = mat4.create();
+    mat4.translate(matrix, matrix, translation);
+    mat4.rotate(matrix, matrix, degToRad(rotX), [1,0,0]);
+    mat4.rotate(matrix, matrix, degToRad(rotY), [0,1,0]);
+    mat4.rotate(matrix, matrix, degToRad(rotZ), [0,0,1]);
+    mat4.scale(matrix, matrix, scale);
+    return matrix;
 }
 
 function degToRad(degrees) {
