@@ -82,7 +82,7 @@ cone.prototype.createTruncatedCone = function (bottomRadius, topRadius, height,
 			switch (this.partID)
 			{
 				case 0: // Bottom segment
-					this.textureCoords.push(vec2((ii / radialSubdivisions) * 5/3, (1-v) * 397/512));
+					this.textureCoords.push(vec2((ii / radialSubdivisions) * 5/4 + .12, (1-v) * 397/512));
 					break;
 				case 1: // Middle segment
 					this.textureCoords.push(vec2((ii / radialSubdivisions) * 2 - .1, v ));
@@ -131,11 +131,12 @@ cone.prototype.drawCone = function(modelTransform)
     gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer );	
 	
 	gl.uniformMatrix4fv(modelLoc, false, flatten(modelTransform));
-	gl.uniformMatrix4fv(cameraLoc, false, flatten(cameraTransform));
+	gl.uniformMatrix4fv(cameraLoc, false, flatten(startingCamera));
     gl.uniformMatrix4fv(projectionLoc, false, flatten(perspective( 45.0, canvas.width/canvas.height, near, far )));
-	
+
 	gl.uniform4fv(colorLoc, [ 1.0, 1.0, 1.0, 1.0 ]);
 	gl.uniform1i(useTextureLoc, true);
+	gl.uniform1i(useThreePositionLoc, false);
 
 	gl.enable( gl.BLEND );
 	gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
@@ -168,7 +169,7 @@ function initCannon()
 	topCone.setupBuffers();
 	
 	cannonDefault = mat4();
-	cannonDefault = mult(cannonDefault, translate(2.8, -2.9, 0));
+	cannonDefault = mult(cannonDefault, translate(2.8, -2.5, 0));
 	cannonDefault = mult(cannonDefault, rotate(-90, vec3(1, 0, 0)));
 	cannonAzimuth = 20;
 	cannonAltitude = 25;
@@ -270,6 +271,7 @@ function drawHUD()
 	
 	gl.uniform4fv(colorLoc, [ 1.0, 1.0, 1.0, 1.0 ]);
 	gl.uniform1i(useTextureLoc, true);
+	gl.uniform1i(useThreePositionLoc, false);
 
 	gl.enable( gl.BLEND );
 	gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );

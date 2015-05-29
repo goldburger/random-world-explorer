@@ -3,6 +3,7 @@
 <script id="vertex-shader" type="x-shader/x-vertex">
 
 attribute vec4 vPosition;
+attribute vec3 threePosition;
 attribute vec2 vTexCoord;
 
 varying vec2 fTexCoord;
@@ -11,11 +12,20 @@ uniform mat4 projectionTransform;
 uniform mat4 cameraTransform;
 uniform mat4 modelTransform;
 
+uniform bool useThreePosition;
+
 void main() 
 {
-    fTexCoord = vTexCoord;
-
-    gl_Position = projectionTransform * cameraTransform * modelTransform * vPosition;
+	if (useThreePosition == true)
+	{
+		fTexCoord = vTexCoord * 40.0;
+		gl_Position = projectionTransform * cameraTransform * modelTransform * vec4(threePosition, 1.0);
+	}
+	else
+	{
+		fTexCoord = vTexCoord;
+		gl_Position = projectionTransform * cameraTransform * modelTransform * vPosition;
+	}
 } 
 </script>
 
@@ -43,6 +53,8 @@ void main()
 <script type="text/javascript" src="MV.js"></script>
 <script type="text/javascript" src="metroid.js"></script>
 <script type="text/javascript" src="cannon-hud.js"></script>
+<script type="text/javascript" src="simplexNoise.js"></script>
+<script type="text/javascript" src="terrain.js"></script>
 
 <body bgcolor="#A0A0A0">
 <canvas id="gl-canvas" width="900"" height="506">
@@ -51,5 +63,6 @@ Oops ... your browser doesn't support the HTML5 canvas element
 <img id = "texImage" src = "Combat Visor 512.png" hidden></img>
 <img id = "texImage2" src = "Cannon Texture 512 Flipped.png" hidden></img>
 <img id = "texImage3" src = "Cannon Middle Texture.jpg" hidden></img>
+<img id = "texImage4" src = "mud.jpg" hidden></img>
 </body>
 </html>

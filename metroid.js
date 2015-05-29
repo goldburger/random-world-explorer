@@ -5,11 +5,11 @@ var program;
 var freeAim = false;
 
 var colorLoc, modelLoc, cameraLoc, projectionLoc;
-var positionLoc, texCoordLoc, useTextureLoc;
+var positionLoc, texCoordLoc, useTextureLoc, useThreePositionLoc;
 var cameraTransform;
 var near = 0.1;
 var far = 1000;
-var startingCamera;
+var startingCamera, resetCamera;
 
 var vBufferCrosshair;
 
@@ -35,33 +35,21 @@ function keyPress(event)
 		case 40: // Down arrow key
 			cameraTransform = mult( translate(0, .25, 0), cameraTransform );
 			break;
-		case 73: // I key
-			cameraTransform = mult( translate(0, 0, .25), cameraTransform );
-			break;
-		case 74: // J key
-			cameraTransform = mult( translate(.25, 0, 0), cameraTransform );
-			break;
-		case 75: // K key
-			cameraTransform = mult( translate(-.25, 0, 0), cameraTransform );
-			break;
-		case 77: // M key
-			cameraTransform = mult( translate(0, 0, -.25), cameraTransform );
-			break;
 		case 82: // R key
-			cameraTransform = startingCamera;
+			cameraTransform = resetCamera;
 			break;
 		
 		case 87: // W
-			cannonAltitude++;
+			cameraTransform = mult( translate(0, 0, 0.5), cameraTransform );
 			break;
 		case 83: // S
-			cannonAltitude--;
+			cameraTransform = mult( translate(0, 0, -0.5), cameraTransform );
 			break;
 		case 65: // A
-			cannonAzimuth++;
+			cameraTransform = mult( translate(0.5, 0, 0), cameraTransform );
 			break;
 		case 68: // D
-			cannonAzimuth--;
+			cameraTransform = mult( translate(-0.5, 0, 0), cameraTransform );
 			break;
 		
 		default:
@@ -82,6 +70,9 @@ function initTexture(image, index)
 			break;
 		case 2:
 			gl.activeTexture(gl.TEXTURE2);
+			break;
+		case 3:
+			gl.activeTexture(gl.TEXTURE3);
 			break;
 	}
     gl.bindTexture( gl.TEXTURE_2D, curTexture );
@@ -155,6 +146,8 @@ window.onload = function init()
 	texCoordLoc = gl.getAttribLocation( program, "vTexCoord" );
     gl.enableVertexAttribArray( texCoordLoc );
 
+	threePositionLoc = gl.getAttribLocation( program, "threePosition" );
+	
     vBufferCrosshair = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, vBufferCrosshair );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(vertices), gl.STATIC_DRAW );
@@ -162,20 +155,30 @@ window.onload = function init()
 	initHUD();
 	initCannon();
 	
+    initTexture(document.getElementById("texImage4"), 3);
+	initTerrain();
+	
 	colorLoc = gl.getUniformLocation( program, "fColor" );
     modelLoc = gl.getUniformLocation( program, "modelTransform" );
     cameraLoc = gl.getUniformLocation( program, "cameraTransform" );	
     projectionLoc = gl.getUniformLocation( program, "projectionTransform" );
 	useTextureLoc = gl.getUniformLocation(program, "useTexture");
+	useThreePositionLoc = gl.getUniformLocation(program, "useThreePosition");
 	
 	startingCamera = mult(translate(0, 0, -5), mat4());
 	cameraTransform = startingCamera;
-
+	
+	// TODO: Change when altering terrain shape, size, layout
+	cameraTransform = mult(translate(0, -3, 0), cameraTransform);
+	cameraTransform = mult( rotate(135, vec3(0, 1, 0)), cameraTransform );
+	
+	resetCamera = cameraTransform;
+	
 	document.onkeydown = keyPress;
 	
 	canvas.onclick = enableAiming;
 	canvas.onmousemove = aim;
-	
+
     render();
 }
 
@@ -193,6 +196,7 @@ function drawCrosshair()
 
 	gl.uniform4fv(colorLoc, [ 0.0, 0.0, 0.0, 1.0 ]);
 	gl.uniform1i(useTextureLoc, false);
+	gl.uniform1i(useThreePositionLoc, false);
 	
 	gl.drawArrays( gl.LINES, 0, 4);
 	
@@ -204,8 +208,8 @@ function render()
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	
 	//drawCrosshair();
-
-	drawCannon();
+	renderTerrain();
+	drawCannon();	
 	drawHUD();
 	
     requestAnimFrame( render );
