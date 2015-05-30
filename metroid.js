@@ -5,11 +5,12 @@ var program;
 var freeAim = false;
 
 var colorLoc, modelLoc, cameraLoc, projectionLoc;
+var cameraAzimuth, cameraAltitude, cameraTransform;
 var positionLoc, texCoordLoc, useTextureLoc, useThreePositionLoc;
-var cameraTransform;
 var near = 0.1;
 var far = 1000;
 var startingCamera, resetCamera;
+var scrollingLeft, scrollingRight, scrollingUp, scrollingDown;
 
 var vBufferCrosshair;
 
@@ -23,33 +24,31 @@ var vertices = [
 function keyPress(event)
 {
 	switch (event.keyCode){
-		case 37: // Left arrow key
-			cameraTransform = mult( rotate(-1, vec3(0, 1, 0)), cameraTransform );
-			break;
-		case 38: // Up arrow key
-			cameraTransform = mult( translate(0, -.25, 0), cameraTransform );
-			break;
-		case 39: // Right arrow key
-			cameraTransform = mult( rotate(1, vec3(0, 1, 0)), cameraTransform );
-			break;
-		case 40: // Down arrow key
-			cameraTransform = mult( translate(0, .25, 0), cameraTransform );
-			break;
 		case 82: // R key
 			cameraTransform = resetCamera;
+			cameraAzimuth = 135;
+			cameraAltitude = 0;
 			break;
 		
 		case 87: // W
+			cameraTransform = mult(rotate(-cameraAltitude, vec3(1, 0, 0)), cameraTransform);
 			cameraTransform = mult( translate(0, 0, 0.5), cameraTransform );
+			cameraTransform = mult(rotate(cameraAltitude, vec3(1, 0, 0)), cameraTransform);	
 			break;
 		case 83: // S
+			cameraTransform = mult(rotate(-cameraAltitude, vec3(1, 0, 0)), cameraTransform);
 			cameraTransform = mult( translate(0, 0, -0.5), cameraTransform );
+			cameraTransform = mult(rotate(cameraAltitude, vec3(1, 0, 0)), cameraTransform);	
 			break;
 		case 65: // A
+			cameraTransform = mult(rotate(-cameraAltitude, vec3(1, 0, 0)), cameraTransform);
 			cameraTransform = mult( translate(0.5, 0, 0), cameraTransform );
+			cameraTransform = mult(rotate(cameraAltitude, vec3(1, 0, 0)), cameraTransform);	
 			break;
 		case 68: // D
+			cameraTransform = mult(rotate(-cameraAltitude, vec3(1, 0, 0)), cameraTransform);
 			cameraTransform = mult( translate(-0.5, 0, 0), cameraTransform );
+			cameraTransform = mult(rotate(cameraAltitude, vec3(1, 0, 0)), cameraTransform);	
 			break;
 		
 		default:
@@ -97,31 +96,35 @@ function aim(event)
 		var y = event.clientY;
 		if (x < canvas.width/10)
 		{
-			// Change heading left; TBD
+			scrollingLeft = true;
 		}
 		else if (x <= canvas.width * 9/10)
 		{
 			x -= canvas.width/10;
 			x = x / canvas.width * 1.25 * -100 + 70;
 			cannonAzimuth = x;
+			scrollingLeft = false;
+			scrollingRight = false;
 		}
 		else
 		{
-			// Change heading right; TBD
+			scrollingRight = true;
 		}
 		if (y < canvas.height/8)
 		{
-			// Change vertical angle up; TBD
+			scrollingUp = true;
 		}
 		else if (y < canvas.height * 7/8)
 		{
 			y -= canvas.height/8;
 			y = y / canvas.height * 4/3 * -50 + 50;
 			cannonAltitude = y;
+			scrollingUp = false;
+			scrollingDown = false;
 		}
 		else
 		{
-			// Change vertical angle down; TBD
+			scrollingDown = true;
 		}
 	}
 }
@@ -167,10 +170,17 @@ window.onload = function init()
 	
 	startingCamera = mult(translate(0, 0, -5), mat4());
 	cameraTransform = startingCamera;
+
+	scrollingLeft = false;
+	scrollingRight = false;
+	scrollingUp = false;
+	scrollingDown = false;
 	
 	// TODO: Change when altering terrain shape, size, layout
-	cameraTransform = mult(translate(0, -3, 0), cameraTransform);
+	cameraTransform = mult(translate(0, -10, 0), cameraTransform);
 	cameraTransform = mult( rotate(135, vec3(0, 1, 0)), cameraTransform );
+	cameraAzimuth = 135;
+	cameraAltitude = 0;
 	
 	resetCamera = cameraTransform;
 	
@@ -206,6 +216,32 @@ function drawCrosshair()
 function render()
 {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	
+	var maxAltitude = 40;
+	if (scrollingLeft == true)
+	{
+		cameraTransform = mult(rotate(-cameraAltitude, vec3(1, 0, 0)), cameraTransform);
+		cameraTransform = mult(rotate(-1, vec3(0, 1, 0)), cameraTransform);
+		cameraTransform = mult(rotate(cameraAltitude, vec3(1, 0, 0)), cameraTransform);
+		cameraAzimuth--;
+	}
+	if (scrollingRight == true)
+	{
+		cameraTransform = mult(rotate(-cameraAltitude, vec3(1, 0, 0)), cameraTransform);
+		cameraTransform = mult(rotate(1, vec3(0, 1, 0)), cameraTransform);
+		cameraTransform = mult(rotate(cameraAltitude, vec3(1, 0, 0)), cameraTransform);	
+		cameraAzimuth++;
+	}
+	if (scrollingUp == true && cameraAltitude >= -1 * maxAltitude)
+	{
+		cameraTransform = mult(rotate(-1, vec3(1, 0, 0)), cameraTransform);
+		cameraAltitude--;
+	}
+	if (scrollingDown == true && cameraAltitude <= maxAltitude)
+	{
+		cameraTransform = mult(rotate(1, vec3(1, 0, 0)), cameraTransform);
+		cameraAltitude++;
+	}
 	
 	//drawCrosshair();
 	renderTerrain();
