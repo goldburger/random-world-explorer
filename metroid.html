@@ -1,123 +1,130 @@
 <html>
+	<head>
+		<title>174A Final Project</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<link rel="stylesheet" href="main.css" type="text/css">
 
-<script id="vertex-shader" type="x-shader/x-vertex">
+		<!-- JavaScript -->
+		<script type="text/javascript" src="webgl-utils.js"></script>
+		<script type="text/javascript" src="initShaders.js"></script>
+		<script type="text/javascript" src="MV.js"></script>
+		<script type="text/javascript" src="metroid.js"></script>
+		<script type="text/javascript" src="cannon-hud.js"></script>
+		<script type="text/javascript" src="simplexNoise.js"></script>
+		<script type="text/javascript" src="terrain.js"></script>
+	</head>
 
-precision mediump float;
+	<body bgcolor="#DDD">
+		<canvas id="gl-canvas" width="900" height="506">
+		Oops ... your browser doesn't support the HTML5 canvas element
+		</canvas>
+		<img id = "texImage" src = "Combat Visor 512.png" hidden></img>
+		<img id = "texImage2" src = "Cannon Texture 512 Flipped.png" hidden></img>
+		<img id = "texImage3" src = "Cannon Middle Texture.jpg" hidden></img>
+		<img id = "texImage4" src = "mud.jpg" hidden></img>
+	</body>
 
-attribute vec4 vPosition;
-attribute vec3 threePosition;
-attribute vec2 vTexCoord;
-attribute vec4 vNormal;
+	<script id="vertex-shader" type="x-shader/x-vertex">
 
-varying vec2 fTexCoord;
+	precision mediump float;
 
-uniform mat4 projectionTransform;
-uniform mat4 cameraTransform;
-uniform mat4 modelTransform;
-uniform bool useLighting;
-uniform bool useThreePosition;
+	attribute vec4 vPosition;
+	attribute vec3 threePosition;
+	attribute vec2 vTexCoord;
+	attribute vec4 vNormal;
 
-uniform vec4 ambientProduct;
-uniform vec4 diffuseProduct;
-uniform vec4 specularProduct;
-uniform vec4 lightPosition;
-uniform float shininess;
-varying vec3 N, L, E;
-varying vec4 varyingColor;
+	varying vec2 fTexCoord;
 
-void main() 
-{
-	if (useLighting == true)
+	uniform mat4 projectionTransform;
+	uniform mat4 cameraTransform;
+	uniform mat4 modelTransform;
+	uniform bool useLighting;
+	uniform bool useThreePosition;
+
+	uniform vec4 ambientProduct;
+	uniform vec4 diffuseProduct;
+	uniform vec4 specularProduct;
+	uniform vec4 lightPosition;
+	uniform float shininess;
+	varying vec3 N, L, E;
+	varying vec4 varyingColor;
+
+	void main() 
 	{
-		vec3 pos = (modelTransform * vPosition).xyz;
+		if (useLighting == true)
+		{
+			vec3 pos = (modelTransform * vPosition).xyz;
 
-		if (lightPosition.w == 0.0)
-			L = normalize(lightPosition.xyz);
+			if (lightPosition.w == 0.0)
+				L = normalize(lightPosition.xyz);
+			else
+				L = normalize( lightPosition.xyz - pos );
+
+			E = -normalize(pos);
+			N = normalize( (modelTransform * vNormal).xyz);
+		}
+		if (useThreePosition == true)
+		{
+			fTexCoord = vTexCoord * 40.0;
+			gl_Position = projectionTransform * cameraTransform * modelTransform * vec4(threePosition, 1.0);
+		}
 		else
-			L = normalize( lightPosition.xyz - pos );
+		{
+			fTexCoord = vTexCoord;
+			gl_Position = projectionTransform * cameraTransform * modelTransform * vPosition;
+		}
+	} 
+	</script>
 
-		E = -normalize(pos);
-		N = normalize( (modelTransform * vNormal).xyz);
-	}
-	if (useThreePosition == true)
+	<script id="fragment-shader" type="x-shader/x-fragment">
+
+	precision mediump float;
+
+	varying vec2 fTexCoord;
+
+	uniform sampler2D texture;
+	uniform vec4 fColor;
+	uniform bool useTexture;
+	uniform bool useLighting;
+
+	uniform vec4 ambientProduct;
+	uniform vec4 diffuseProduct;
+	uniform vec4 specularProduct;
+	uniform vec4 lightPosition;
+	uniform float shininess;
+	varying vec3 N, L, E;
+	varying vec4 varyingColor;
+
+	void main()
 	{
-		fTexCoord = vTexCoord * 40.0;
-		gl_Position = projectionTransform * cameraTransform * modelTransform * vec4(threePosition, 1.0);
+		if (useLighting == true && useTexture == true)
+		{
+			vec4 phongColor;
+			
+			vec3 H = normalize( L + E );
+			vec4 ambient = ambientProduct;
+
+			float Kd = max( dot(L, N), 0.0 );
+			vec4  diffuse = Kd * diffuseProduct;
+
+			float Ks = pow( max(dot(N, H), 0.0), shininess );
+			vec4  specular = Ks * specularProduct;
+			
+			if ( dot(L, N) < 0.0 )
+				specular = vec4(0.0, 0.0, 0.0, 1.0);
+
+			phongColor = ambient + diffuse + specular;
+			phongColor.a = 1.0;
+
+			gl_FragColor = phongColor * texture2D( texture, fTexCoord );
+		}
+		else if (useTexture == true)
+		{
+			gl_FragColor = fColor * texture2D( texture, fTexCoord );
+		}
+		else
+			gl_FragColor = fColor;
 	}
-	else
-	{
-		fTexCoord = vTexCoord;
-		gl_Position = projectionTransform * cameraTransform * modelTransform * vPosition;
-	}
-} 
-</script>
+	</script>
 
-<script id="fragment-shader" type="x-shader/x-fragment">
-
-precision mediump float;
-
-varying vec2 fTexCoord;
-
-uniform sampler2D texture;
-uniform vec4 fColor;
-uniform bool useTexture;
-uniform bool useLighting;
-
-uniform vec4 ambientProduct;
-uniform vec4 diffuseProduct;
-uniform vec4 specularProduct;
-uniform vec4 lightPosition;
-uniform float shininess;
-varying vec3 N, L, E;
-varying vec4 varyingColor;
-
-void main()
-{
-	if (useLighting == true && useTexture == true)
-	{
-		vec4 phongColor;
-		
-		vec3 H = normalize( L + E );
-		vec4 ambient = ambientProduct;
-
-		float Kd = max( dot(L, N), 0.0 );
-		vec4  diffuse = Kd * diffuseProduct;
-
-		float Ks = pow( max(dot(N, H), 0.0), shininess );
-		vec4  specular = Ks * specularProduct;
-		
-		if ( dot(L, N) < 0.0 )
-			specular = vec4(0.0, 0.0, 0.0, 1.0);
-
-		phongColor = ambient + diffuse + specular;
-		phongColor.a = 1.0;
-
-		gl_FragColor = phongColor * texture2D( texture, fTexCoord );
-	}
-	else if (useTexture == true)
-	{
-		gl_FragColor = fColor * texture2D( texture, fTexCoord );
-	}
-	else
-		gl_FragColor = fColor;
-}
-</script>
-
-<script type="text/javascript" src="webgl-utils.js"></script>
-<script type="text/javascript" src="initShaders.js"></script>
-<script type="text/javascript" src="MV.js"></script>
-<script type="text/javascript" src="metroid.js"></script>
-<script type="text/javascript" src="cannon-hud.js"></script>
-<script type="text/javascript" src="simplexNoise.js"></script>
-<script type="text/javascript" src="terrain.js"></script>
-
-<body bgcolor="#A0A0A0">
-<canvas id="gl-canvas" width="900"" height="506">
-Oops ... your browser doesn't support the HTML5 canvas element
-</canvas>
-<img id = "texImage" src = "Combat Visor 512.png" hidden></img>
-<img id = "texImage2" src = "Cannon Texture 512 Flipped.png" hidden></img>
-<img id = "texImage3" src = "Cannon Middle Texture.jpg" hidden></img>
-<img id = "texImage4" src = "mud.jpg" hidden></img>
-</body>
 </html>
