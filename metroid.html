@@ -15,18 +15,25 @@
 	</head>
 
 	<body bgcolor="#DDD">
+		<a href="#" onclick="document.getElementById('start').style.display='none';return false;">
+			<div class="start" id="start">
+					<h1>Shooting Practice</h1>
+					<p>Click to begin</p>
+			</div>
+		</a>
 		<canvas id="gl-canvas" width="900" height="506">
 		Oops ... your browser doesn't support the HTML5 canvas element
 		</canvas>
-		<img id = "texImage" src = "Combat Visor 512.png" hidden></img>
-		<img id = "texImage2" src = "Cannon Texture 512 Flipped.png" hidden></img>
-		<img id = "texImage3" src = "Cannon Middle Texture.jpg" hidden></img>
-		<img id = "texImage4" src = "mud.jpg" hidden></img>
+		<img id = "texImage" src ="Combat Visor 512.png" hidden></img>
+		<img id = "texImage2" src ="Cannon Texture 512 Flipped.png" hidden></img>
+		<img id = "texImage3" src ="Cannon Middle Texture.jpg" hidden></img>
+		<img id = "texImage4" src ="mud.jpg" hidden></img>
 		<div class="how">
 			<h1>How to Play</h1>
 			<p>Move: W A S D</p>
+			<p>Toggle Aim: Mouse Click</p>
 			<p>Aim: Mouse</p>
-			<p>Shoot: Mouse Click</p>
+			<p>Shoot: Spacebar</p>
 		</div>
 		<footer>CS 174A Final Project: Matt Goldberg, Zoe Xi, Shobhit Garg, Neil Bedi</footer>
 	</body>

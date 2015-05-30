@@ -83,9 +83,9 @@ function initTexture(image, index)
     gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR );
 }
 
-function enableAiming(event)
+function toggleAiming(event)
 {
-	freeAim = true;
+	freeAim = !freeAim;
 	aim(event);
 }
 
@@ -200,7 +200,7 @@ window.onload = function init()
 	
 	document.onkeydown = keyPress;
 	
-	canvas.onclick = enableAiming;
+	canvas.onclick = toggleAiming;
 	canvas.onmousemove = aim;
 
     render();

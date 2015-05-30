@@ -5,6 +5,37 @@ body {
 	font-family: 'Helvetica', sans-serif;
 }
 
+.start {
+	background-color: black;
+	width: 900px;
+	height: 506px;
+	position: absolute;
+	cursor: pointer;
+}
+
+a .start {
+	color: white;
+	text-decoration: none;
+}
+
+.start h1 {
+	position: relative;
+	top: 180px;
+	text-align: center;
+	font-size: 3rem;
+}
+
+.start p {
+	position: relative;
+	top: 220px;
+	text-align: center;
+	font-size: 1.5rem;
+}
+
+a .start p:hover {
+	font-size: 1.7rem;
+}
+
 canvas {
 	/*border: 2px solid black;*/
 	box-shadow: grey 2px 2px 2px;
