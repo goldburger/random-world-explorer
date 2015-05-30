@@ -2,20 +2,43 @@
 
 <script id="vertex-shader" type="x-shader/x-vertex">
 
+precision mediump float;
+
 attribute vec4 vPosition;
 attribute vec3 threePosition;
 attribute vec2 vTexCoord;
+attribute vec4 vNormal;
 
 varying vec2 fTexCoord;
 
 uniform mat4 projectionTransform;
 uniform mat4 cameraTransform;
 uniform mat4 modelTransform;
-
+uniform bool useLighting;
 uniform bool useThreePosition;
+
+uniform vec4 ambientProduct;
+uniform vec4 diffuseProduct;
+uniform vec4 specularProduct;
+uniform vec4 lightPosition;
+uniform float shininess;
+varying vec3 N, L, E;
+varying vec4 varyingColor;
 
 void main() 
 {
+	if (useLighting == true)
+	{
+		vec3 pos = (modelTransform * vPosition).xyz;
+
+		if (lightPosition.w == 0.0)
+			L = normalize(lightPosition.xyz);
+		else
+			L = normalize( lightPosition.xyz - pos );
+
+		E = -normalize(pos);
+		N = normalize( (modelTransform * vNormal).xyz);
+	}
 	if (useThreePosition == true)
 	{
 		fTexCoord = vTexCoord * 40.0;
@@ -38,11 +61,43 @@ varying vec2 fTexCoord;
 uniform sampler2D texture;
 uniform vec4 fColor;
 uniform bool useTexture;
+uniform bool useLighting;
+
+uniform vec4 ambientProduct;
+uniform vec4 diffuseProduct;
+uniform vec4 specularProduct;
+uniform vec4 lightPosition;
+uniform float shininess;
+varying vec3 N, L, E;
+varying vec4 varyingColor;
 
 void main()
 {
-	if (useTexture == true)
+	if (useLighting == true && useTexture == true)
+	{
+		vec4 phongColor;
+		
+		vec3 H = normalize( L + E );
+		vec4 ambient = ambientProduct;
+
+		float Kd = max( dot(L, N), 0.0 );
+		vec4  diffuse = Kd * diffuseProduct;
+
+		float Ks = pow( max(dot(N, H), 0.0), shininess );
+		vec4  specular = Ks * specularProduct;
+		
+		if ( dot(L, N) < 0.0 )
+			specular = vec4(0.0, 0.0, 0.0, 1.0);
+
+		phongColor = ambient + diffuse + specular;
+		phongColor.a = 1.0;
+
+		gl_FragColor = phongColor * texture2D( texture, fTexCoord );
+	}
+	else if (useTexture == true)
+	{
 		gl_FragColor = fColor * texture2D( texture, fTexCoord );
+	}
 	else
 		gl_FragColor = fColor;
 }

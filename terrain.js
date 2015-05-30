@@ -98,6 +98,7 @@ function renderTerrain()
 
 	gl.uniform4fv(colorLoc, [ 1.0, 1.0, 1.0, 1.0 ]);
 	gl.uniform1i(useTextureLoc, true);
+	gl.uniform1i(useLightingLoc, false);
 	gl.uniform1i(useThreePositionLoc, true);
 
 	gl.enable( gl.BLEND );

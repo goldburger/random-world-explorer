@@ -6,7 +6,8 @@ var freeAim = false;
 
 var colorLoc, modelLoc, cameraLoc, projectionLoc;
 var cameraAzimuth, cameraAltitude, cameraTransform;
-var positionLoc, texCoordLoc, useTextureLoc, useThreePositionLoc;
+var positionLoc, texCoordLoc, normalLoc;
+var useTextureLoc, useLightingLoc, useThreePositionLoc;
 var near = 0.1;
 var far = 1000;
 var startingCamera, resetCamera;
@@ -129,6 +130,15 @@ function aim(event)
 	}
 }
 
+function dummyLightingUniforms()
+{
+    gl.uniform4fv( gl.getUniformLocation(program, "ambientProduct"), flatten(vec4(0, 0, 0, 0)));
+    gl.uniform4fv( gl.getUniformLocation(program, "diffuseProduct"), flatten(vec4(0, 0, 0, 0)));
+    gl.uniform4fv( gl.getUniformLocation(program, "specularProduct"), flatten(vec4(0, 0, 0, 0)));
+    gl.uniform4fv( gl.getUniformLocation(program, "lightPosition"), flatten(vec4(0, 0, 0, 0)));
+    gl.uniform1f( gl.getUniformLocation(program, "shininess"), 0);
+}
+
 window.onload = function init()
 {
     canvas = document.getElementById( "gl-canvas" );
@@ -150,6 +160,7 @@ window.onload = function init()
     gl.enableVertexAttribArray( texCoordLoc );
 
 	threePositionLoc = gl.getAttribLocation( program, "threePosition" );
+	normalLoc = gl.getAttribLocation( program, "vNormal" );
 	
     vBufferCrosshair = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, vBufferCrosshair );
@@ -166,7 +177,10 @@ window.onload = function init()
     cameraLoc = gl.getUniformLocation( program, "cameraTransform" );	
     projectionLoc = gl.getUniformLocation( program, "projectionTransform" );
 	useTextureLoc = gl.getUniformLocation(program, "useTexture");
+	useLightingLoc = gl.getUniformLocation(program, "useLighting");
 	useThreePositionLoc = gl.getUniformLocation(program, "useThreePosition");
+	
+	dummyLightingUniforms();
 	
 	startingCamera = mult(translate(0, 0, -5), mat4());
 	cameraTransform = startingCamera;
@@ -206,6 +220,7 @@ function drawCrosshair()
 
 	gl.uniform4fv(colorLoc, [ 0.0, 0.0, 0.0, 1.0 ]);
 	gl.uniform1i(useTextureLoc, false);
+	gl.uniform1i(useLightingLoc, false);
 	gl.uniform1i(useThreePositionLoc, false);
 	
 	gl.drawArrays( gl.LINES, 0, 4);

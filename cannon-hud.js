@@ -16,6 +16,7 @@ function cone(partID)
 	this.indexBuffer;
 	this.vertexBuffer;
 	this.textureBuffer;
+	this.normalBuffer;
 }
 
 cone.prototype.createTruncatedCone = function (bottomRadius, topRadius, height,
@@ -118,15 +119,24 @@ cone.prototype.setupBuffers = function()
     this.textureBuffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, this.textureBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(this.textureCoords), gl.STATIC_DRAW );
+	
+	this.normalBuffer = gl.createBuffer();
+    gl.bindBuffer( gl.ARRAY_BUFFER, this.normalBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(this.normals), gl.STATIC_DRAW );
 }
 
 cone.prototype.drawCone = function(modelTransform)
 {
+    gl.enableVertexAttribArray( normalLoc );
+
 	gl.bindBuffer( gl.ARRAY_BUFFER, this.vertexBuffer );
     gl.vertexAttribPointer( positionLoc, 4, gl.FLOAT, false, 0, 0 );
 
 	gl.bindBuffer( gl.ARRAY_BUFFER, this.textureBuffer );
     gl.vertexAttribPointer( texCoordLoc, 2, gl.FLOAT, false, 0, 0 );
+	
+	gl.bindBuffer( gl.ARRAY_BUFFER, this.normalBuffer );
+    gl.vertexAttribPointer( normalLoc, 4, gl.FLOAT, false, 0, 0 );
 
     gl.bindBuffer( gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer );	
 	
@@ -136,7 +146,18 @@ cone.prototype.drawCone = function(modelTransform)
 
 	gl.uniform4fv(colorLoc, [ 1.0, 1.0, 1.0, 1.0 ]);
 	gl.uniform1i(useTextureLoc, true);
+	gl.uniform1i(useLightingLoc, true);
 	gl.uniform1i(useThreePositionLoc, false);
+	
+	var lightAmbient = vec4(0.2, 0.2, 0.2, 1.0 );
+	var materialAmbient = vec4(1.0, 1.0, 1.0, 1.0);
+	var lightDiffuse = vec4(0.9, 0.9, 0.9, 1.0);
+	var materialDiffuse = vec4(1.0, 1.0, 1.0, 1.0);
+    gl.uniform4fv( gl.getUniformLocation(program, "ambientProduct"), flatten(mult(lightAmbient, materialAmbient)));
+    gl.uniform4fv( gl.getUniformLocation(program, "diffuseProduct"), flatten(mult(lightDiffuse, materialDiffuse)));
+    gl.uniform4fv( gl.getUniformLocation(program, "specularProduct"), flatten(vec4(0, 0, 0, 0)));
+    gl.uniform4fv( gl.getUniformLocation(program, "lightPosition"), flatten(vec4(0, 100, 0, 0)));
+    gl.uniform1f( gl.getUniformLocation(program, "shininess"), 0);
 
 	gl.enable( gl.BLEND );
 	gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
@@ -144,6 +165,8 @@ cone.prototype.drawCone = function(modelTransform)
 	gl.drawElements( gl.TRIANGLES, this.numIndices, gl.UNSIGNED_BYTE, 0 );
     gl.enable(gl.DEPTH_TEST);
 	gl.disable( gl.BLEND );
+	
+    gl.disableVertexAttribArray( normalLoc );
 }
 
 function initCannon()
@@ -271,6 +294,7 @@ function drawHUD()
 	
 	gl.uniform4fv(colorLoc, [ 1.0, 1.0, 1.0, 1.0 ]);
 	gl.uniform1i(useTextureLoc, true);
+	gl.uniform1i(useLightingLoc, false);
 	gl.uniform1i(useThreePositionLoc, false);
 
 	gl.enable( gl.BLEND );
