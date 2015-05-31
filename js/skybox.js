@@ -69,14 +69,16 @@ function initSkybox() {
 }
 
 function drawSkybox() {
-
+	
     gl.disableVertexAttribArray( positionLoc );
     gl.disableVertexAttribArray( texCoordLoc );
-    gl.enableVertexAttribArray( threePositionLoc );
+	gl.enableVertexAttribArray( threePositionLoc );
 
-    //gl.activeTexture(gl.TEXTURE4);
+    gl.activeTexture(gl.TEXTURE4);
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, skyboxTexture);
     gl.uniform1i(gl.getUniformLocation(program, "skybox"), 4);
-
+    gl.uniform1i(gl.getUniformLocation(program, "texture"), 2);
+	
     gl.bindBuffer(gl.ARRAY_BUFFER, skyboxVertexPositionBuffer);
     gl.vertexAttribPointer(threePositionLoc, 3, gl.FLOAT, false, 0, 0);
 
@@ -100,5 +102,31 @@ function drawSkybox() {
     gl.disableVertexAttribArray( threePositionLoc );
     gl.enableVertexAttribArray( texCoordLoc );
     gl.enableVertexAttribArray( positionLoc );
+}
 
+function drawSkyboxNew()
+{
+	gl.useProgram(programSky);
+	var skyPositionLoc = gl.getAttribLocation( programSky, "threePosition" );
+    gl.enableVertexAttribArray( skyPositionLoc );
+	
+    gl.activeTexture(gl.TEXTURE4);
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, skyboxTexture);
+    gl.uniform1i(gl.getUniformLocation(programSky, "skybox"), 4);	
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, skyboxVertexPositionBuffer);
+    gl.vertexAttribPointer(skyPositionLoc, 3, gl.FLOAT, false, 0, 0);	
+
+	gl.uniformMatrix4fv(gl.getUniformLocation( programSky, "modelTransform" ), false, flatten(mat4()));
+    gl.uniformMatrix4fv(gl.getUniformLocation( programSky, "cameraTransform" ), false, flatten(cameraTransform));
+    gl.uniformMatrix4fv(gl.getUniformLocation( programSky, "projectionTransform" ), false, flatten(perspective( 45.0, canvas.width/canvas.height, near, far )));
+ 
+    gl.enable( gl.BLEND );
+    gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
+    gl.enable(gl.DEPTH_TEST);
+    gl.drawArrays(gl.TRIANGLES, 0, skyboxVertexPositionBuffer.numItems);
+    gl.disable(gl.DEPTH_TEST);
+    gl.disable( gl.BLEND );
+ 
+	gl.useProgram(program);
 }

@@ -100,19 +100,36 @@ void main()
 	{
 		gl_Position = projectionTransform * cameraTransform * modelTransform * vec4(threePosition, 1.0);
 
-		if (useSkybox == true) {
+		
+		fTexCoord = vTexCoord * 80.0;
+		
+		if (useSkybox == true)
 			vCoords = threePosition;
-		}
-		else {
-			fTexCoord = vTexCoord * 80.0;
-		}
-
 	}
 	else
 	{
 		fTexCoord = vTexCoord;
 		gl_Position = projectionTransform * cameraTransform * modelTransform * vPosition;
 	}
+}
+</script>
+
+<script id="vertex-shader-sky" type="x-shader/x-vertex">
+
+precision mediump float;
+
+attribute vec3 threePosition;
+
+uniform mat4 projectionTransform;
+uniform mat4 cameraTransform;
+uniform mat4 modelTransform;
+
+varying vec3 vCoords;
+
+void main()
+{
+	gl_Position = projectionTransform * cameraTransform * modelTransform * vec4(threePosition, 1.0);
+	vCoords = threePosition;
 }
 </script>
 
@@ -162,16 +179,29 @@ void main()
 
 		gl_FragColor = phongColor * texture2D( texture, fTexCoord );
 	}
-	else if (useSkybox == true)
-	{
-		gl_FragColor = textureCube(skybox, vCoords);
-	}
 	else if (useTexture == true)
 	{
 		gl_FragColor = fColor * texture2D( texture, fTexCoord );
 	}
+	else if (useSkybox == true)
+	{
+		gl_FragColor = textureCube(skybox, vCoords);
+	}
 	else
 		gl_FragColor = fColor;
+}
+</script>
+
+<script id="fragment-shader-sky" type="x-shader/x-fragment">
+
+precision mediump float;
+
+varying vec3 vCoords;
+uniform samplerCube skybox;
+
+void main()
+{
+	gl_FragColor = textureCube(skybox, vCoords);
 }
 </script>
 

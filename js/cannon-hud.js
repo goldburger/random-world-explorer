@@ -148,7 +148,7 @@ cone.prototype.drawCone = function(modelTransform)
 	gl.uniform1i(useTextureLoc, true);
 	gl.uniform1i(useLightingLoc, true);
 	gl.uniform1i(useThreePositionLoc, false);
-	gl.uniform1i(useSkyboxLoc, false);
+	//gl.uniform1i(useSkyboxLoc, false);
 	
 	var lightAmbient = vec4(0.2, 0.2, 0.2, 1.0 );
 	var materialAmbient = vec4(1.0, 1.0, 1.0, 1.0);
@@ -297,7 +297,7 @@ function drawHUD()
 	gl.uniform1i(useTextureLoc, true);
 	gl.uniform1i(useLightingLoc, false);
 	gl.uniform1i(useThreePositionLoc, false);
-	gl.uniform1i(useSkyboxLoc, false);
+	//gl.uniform1i(useSkyboxLoc, false);
 
 	gl.enable( gl.BLEND );
 	gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );

@@ -84,6 +84,8 @@ function drawTerrain()
     gl.disableVertexAttribArray( positionLoc );
     gl.enableVertexAttribArray( threePositionLoc );
 
+    gl.activeTexture(gl.TEXTURE3);
+	gl.bindTexture(gl.TEXTURE_2D, terrainTexture);
     gl.uniform1i(gl.getUniformLocation(program, "texture"), 3);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, terrainVertexPositionBuffer);
@@ -102,7 +104,7 @@ function drawTerrain()
 	gl.uniform1i(useTextureLoc, true);
 	gl.uniform1i(useLightingLoc, false);
 	gl.uniform1i(useThreePositionLoc, true);
-    gl.uniform1f(useSkyboxLoc, false);
+    //gl.uniform1f(useSkyboxLoc, false);
 
 	gl.enable( gl.BLEND );
 	gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
