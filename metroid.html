@@ -1,0 +1,62 @@
+<html>
+
+<script id="vertex-shader" type="x-shader/x-vertex">
+
+attribute vec4 vPosition;
+attribute vec3 threePosition;
+attribute vec2 vTexCoord;
+
+varying vec2 fTexCoord;
+
+uniform mat4 projectionTransform;
+uniform mat4 cameraTransform;
+uniform mat4 modelTransform;
+
+//uniform bool useThreePosition;
+
+void main() 
+{
+	fTexCoord = vTexCoord;
+	gl_Position = projectionTransform * cameraTransform * modelTransform * vPosition;
+} 
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+
+precision mediump float;
+
+varying vec2 fTexCoord;
+
+uniform sampler2D texture;
+uniform vec4 fColor;
+uniform bool useTexture;
+
+void main()
+{
+	if (useTexture == true)
+		gl_FragColor = fColor * texture2D( texture, fTexCoord );
+	else
+		gl_FragColor = fColor;
+}
+</script>
+
+<script type="text/javascript" src="webgl-utils.js"></script>
+<script type="text/javascript" src="initShaders.js"></script>
+<script type="text/javascript" src="MV.js"></script>
+<script type="text/javascript" src="metroid.js"></script>
+<script type="text/javascript" src="cannon-hud.js"></script>
+<script type="text/javascript" src="simplexNoise.js"></script>
+<script type="text/javascript" src="terrain.js"></script>
+<script type="text/javascript" src="Shape.js"></script>
+
+
+<body bgcolor="#A0A0A0">
+<canvas id="gl-canvas" width="900"" height="506">
+Oops ... your browser doesn't support the HTML5 canvas element
+</canvas>
+<img id = "texImage" src = "Combat Visor 512.png" hidden></img>
+<img id = "texImage2" src = "Cannon Texture 512 Flipped.png" hidden></img>
+<img id = "texImage3" src = "Cannon Middle Texture.jpg" hidden></img>
+<img id = "texImage4" src = "mud.jpg" hidden></img>
+</body>
+</html>
