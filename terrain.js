@@ -6,7 +6,7 @@ var terrainVertexTextureCoordBuffer;
 var terrainIndexBuffer;
 
 var VERTEX_COUNT = 256;
-var SIZE = 800;
+var SIZE = 4096;
 
 var terrainCount = VERTEX_COUNT * VERTEX_COUNT;
 var terrainVertices = new Array(terrainCount * 3);
@@ -17,6 +17,8 @@ var terrainIndices = new Array(6*(VERTEX_COUNT-1)*(VERTEX_COUNT-1));
 var simplexTerrain = new SimplexNoise(12345);
 
 function initTerrain() {
+    initTexture(document.getElementById("texImage4"), 3);
+
     var height;
 
     // Generates the terrain vertices and texture coordinates so that
@@ -26,7 +28,7 @@ function initTerrain() {
         for(var j=0; j<VERTEX_COUNT; j++){
 			terrainVertices[vertexPointer*3] = j/(VERTEX_COUNT - 1.0) * SIZE;
             height = simplexTerrain.noise(j,i);
-            terrainVertices[vertexPointer*3+1] = height;	// y = height
+            terrainVertices[vertexPointer*3+1] = height * 5.0;	// y = height
             terrainVertices[vertexPointer*3+2] = i/(VERTEX_COUNT - 1.0) * SIZE;
 
             terrainNormals[vertexPointer*3] = 0;       // normal.x
@@ -77,16 +79,16 @@ function initTerrain() {
     //document.getElementById("loadingtext").textContent = "";
 }
 
-function renderTerrain()
+function drawTerrain()
 {
     gl.disableVertexAttribArray( positionLoc );
     gl.enableVertexAttribArray( threePositionLoc );
-	
+
     gl.uniform1i(gl.getUniformLocation(program, "texture"), 3);
-	
+
     gl.bindBuffer(gl.ARRAY_BUFFER, terrainVertexPositionBuffer);
     gl.vertexAttribPointer(threePositionLoc, 3, gl.FLOAT, false, 0, 0);
-	
+
 	gl.bindBuffer(gl.ARRAY_BUFFER, terrainVertexTextureCoordBuffer);
     gl.vertexAttribPointer(texCoordLoc, 2, gl.FLOAT, false, 0, 0);
 
@@ -100,6 +102,7 @@ function renderTerrain()
 	gl.uniform1i(useTextureLoc, true);
 	gl.uniform1i(useLightingLoc, false);
 	gl.uniform1i(useThreePositionLoc, true);
+    gl.uniform1f(useSkyboxLoc, false);
 
 	gl.enable( gl.BLEND );
 	gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
