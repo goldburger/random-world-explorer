@@ -212,7 +212,6 @@ window.onload = function init()
 	useTextureLoc = gl.getUniformLocation(program, "useTexture");
 	useLightingLoc = gl.getUniformLocation(program, "useLighting");
 	useThreePositionLoc = gl.getUniformLocation(program, "useThreePosition");
-	useSkyboxLoc = gl.getUniformLocation(program, "useSkybox");
 	
     vBufferCrosshair = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, vBufferCrosshair );
@@ -265,7 +264,7 @@ function drawCrosshair()
 	gl.uniform1i(useTextureLoc, false);
 	gl.uniform1i(useLightingLoc, false);
 	gl.uniform1i(useThreePositionLoc, false);
-    gl.uniform1i(useSkyboxLoc, false);
+    //gl.uniform1i(useSkyboxLoc, false);
 	
 	gl.drawArrays( gl.LINES, 0, 4);
 	
@@ -303,10 +302,9 @@ function render()
 	}
 	
 	//drawCrosshair();
-	
-    drawSkybox();
+
 	drawTerrain();
-	drawSkyboxNew();
+	drawSkybox();	// new version of drawSkybox(). Need to revert commit to get old one back
 
 	drawCannon();
 	drawHUD();

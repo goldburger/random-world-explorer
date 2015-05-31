@@ -81,9 +81,6 @@ uniform float shininess;
 varying vec3 N, L, E;
 varying vec4 varyingColor;
 
-// Skybox variables
-varying vec3 vCoords;
-
 void main()
 {
 	if (useLighting == true)
@@ -102,11 +99,8 @@ void main()
 	{
 		gl_Position = projectionTransform * cameraTransform * modelTransform * vec4(threePosition, 1.0);
 
-		
 		fTexCoord = vTexCoord * 80.0;
-		
-		if (useSkybox == true)
-			vCoords = threePosition;
+
 	}
 	else
 	{
@@ -155,9 +149,6 @@ uniform float shininess;
 varying vec3 N, L, E;
 varying vec4 varyingColor;
 
-varying vec3 vCoords;
-uniform samplerCube skybox;
-
 void main()
 {
 	if (useLighting == true && useTexture == true)
@@ -184,10 +175,6 @@ void main()
 	else if (useTexture == true)
 	{
 		gl_FragColor = fColor * texture2D( texture, fTexCoord );
-	}
-	else if (useSkybox == true)
-	{
-		gl_FragColor = textureCube(skybox, vCoords);
 	}
 	else
 		gl_FragColor = fColor;

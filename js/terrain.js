@@ -75,8 +75,6 @@ function initTerrain() {
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(terrainIndices), gl.STATIC_DRAW);
     terrainIndexBuffer.itemSize = 1;
     terrainIndexBuffer.numItems = (VERTEX_COUNT-1)*(VERTEX_COUNT-1);
-
-    //document.getElementById("loadingtext").textContent = "";
 }
 
 function drawTerrain()
@@ -104,7 +102,6 @@ function drawTerrain()
 	gl.uniform1i(useTextureLoc, true);
 	gl.uniform1i(useLightingLoc, false);
 	gl.uniform1i(useThreePositionLoc, true);
-    //gl.uniform1f(useSkyboxLoc, false);
 
 	gl.enable( gl.BLEND );
 	gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
