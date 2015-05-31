@@ -111,9 +111,9 @@ function initTexture(image, index)
     }
 }
 
-function toggleAiming(event)
+function enableAiming(event)
 {
-	freeAim = !freeAim;
+	freeAim = true;
 	aim(event);
 }
 
@@ -123,7 +123,8 @@ function aim(event)
 	{
 		var x = event.clientX;
 		var y = event.clientY;
-		if (x < canvas.width/10)
+		var w = window.innerWidth;
+		if (x - (w-canvas.width)/2 < canvas.width/10)
 		{
 			scrollingLeft = true;
 		}
@@ -230,7 +231,7 @@ window.onload = function init()
 	
 	document.onkeydown = keyPress;
 	
-	canvas.onclick = toggleAiming;
+	canvas.onclick = enableAiming;
 	canvas.onmousemove = aim;
 
     render();
