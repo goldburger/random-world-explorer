@@ -6,11 +6,13 @@ body {
 }
 
 .start {
-	background-color: black;
+	padding-top: 50px;
+	background-color: #333;
 	width: 900px;
-	height: 506px;
+	height: 456px;
 	position: absolute;
 	cursor: pointer;
+	text-align: center;
 }
 
 a .start {
@@ -19,16 +21,10 @@ a .start {
 }
 
 .start h1 {
-	position: relative;
-	top: 180px;
-	text-align: center;
 	font-size: 3rem;
 }
 
 .start p {
-	position: relative;
-	top: 220px;
-	text-align: center;
 	font-size: 1.5rem;
 }
 

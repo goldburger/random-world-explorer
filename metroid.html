@@ -5,6 +5,7 @@
 		<link rel="stylesheet" href="main.css" type="text/css">
 
 		<!-- JavaScript -->
+		<script src="//cdn.jsdelivr.net/vivus/0.2.1/vivus.min.js"></script>
 		<script type="text/javascript" src="js/util/webgl-utils.js"></script>
 		<script type="text/javascript" src="js/util/initShaders.js"></script>
 		<script type="text/javascript" src="js/util/MV.js"></script>
@@ -18,8 +19,9 @@
 	<body bgcolor="#DDD">
 		<a href="#" onclick="document.getElementById('start').style.display='none';return false;">
 			<div class="start" id="start">
-					<h1>Shooting Practice</h1>
-					<p>Click to begin</p>
+				<h1>Shooting Practice</h1>
+				<div id="icon"></div>
+				<p>Click to begin</p>
 			</div>
 		</a>
 		<canvas id="gl-canvas" width="900" height="506">
@@ -174,5 +176,9 @@ void main()
 		gl_FragColor = fColor;
 }
 </script>
+
+<script>
+      new Vivus('icon', {type: 'async', duration: 200, file: '/img/icon.svg'});
+ </script>
 
 </html>
