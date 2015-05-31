@@ -28,7 +28,7 @@ function initTerrain() {
         for(var j=0; j<VERTEX_COUNT; j++){
 			terrainVertices[vertexPointer*3] = j/(VERTEX_COUNT - 1.0) * SIZE;
             height = simplexTerrain.noise(j,i);
-            terrainVertices[vertexPointer*3+1] = height * 5.0;	// y = height
+            terrainVertices[vertexPointer*3+1] = height * 4.0;	// y = height
             terrainVertices[vertexPointer*3+2] = i/(VERTEX_COUNT - 1.0) * SIZE;
 
             terrainNormals[vertexPointer*3] = 0;       // normal.x
