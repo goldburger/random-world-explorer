@@ -80,11 +80,7 @@ function drawSkybox() {
     gl.vertexAttribPointer(threePositionLoc, 3, gl.FLOAT, false, 0, 0);
 
     gl.uniformMatrix4fv(modelLoc, false, flatten(mat4()));
-    var copyCameraTransform = mult(mat4(), cameraTransform);
-    copyCameraTransform[0][3] = 0;
-    copyCameraTransform[1][3] = 0;
-    copyCameraTransform[2][3] = 0;
-    gl.uniformMatrix4fv(cameraLoc, false, flatten(copyCameraTransform));
+    gl.uniformMatrix4fv(cameraLoc, false, flatten(cameraTransform));
     gl.uniformMatrix4fv(projectionLoc, false, flatten(perspective( 45.0, canvas.width/canvas.height, near, far )));
 
     gl.enable( gl.BLEND );

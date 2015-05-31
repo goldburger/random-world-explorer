@@ -111,9 +111,9 @@ function initTexture(image, index)
     }
 }
 
-function enableAiming(event)
+function toggleAiming(event)
 {
-	freeAim = true;
+	freeAim = !freeAim;
 	aim(event);
 }
 
@@ -230,7 +230,7 @@ window.onload = function init()
 	
 	document.onkeydown = keyPress;
 	
-	canvas.onclick = enableAiming;
+	canvas.onclick = toggleAiming;
 	canvas.onmousemove = aim;
 
     render();
