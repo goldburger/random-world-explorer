@@ -73,7 +73,7 @@ function drawSkybox() {
     gl.disableVertexAttribArray( positionLoc );
     gl.enableVertexAttribArray( threePositionLoc );
 
-    gl.activeTexture(gl.TEXTURE4);
+    //gl.activeTexture(gl.TEXTURE4);
     gl.uniform1i(gl.getUniformLocation(program, "skybox"), 4);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, skyboxVertexPositionBuffer);
