@@ -292,7 +292,8 @@ function render()
 	//drawCrosshair();
 	drawTerrain();
     drawSkybox();
-	drawCannon();	
+
+	drawCannon();
 	drawHUD();
 	
     requestAnimFrame( render );

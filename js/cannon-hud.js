@@ -164,7 +164,7 @@ cone.prototype.drawCone = function(modelTransform)
 	gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
 	gl.enable(gl.DEPTH_TEST);
 	gl.drawElements( gl.TRIANGLES, this.numIndices, gl.UNSIGNED_BYTE, 0 );
-    gl.enable(gl.DEPTH_TEST);
+    gl.disable(gl.DEPTH_TEST);
 	gl.disable( gl.BLEND );
 	
     gl.disableVertexAttribArray( normalLoc );
@@ -303,6 +303,6 @@ function drawHUD()
 	gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
 	gl.enable(gl.DEPTH_TEST);
 	gl.drawElements( gl.TRIANGLES, 6, gl.UNSIGNED_BYTE, 0 );
-    gl.enable(gl.DEPTH_TEST);
+    gl.disable(gl.DEPTH_TEST);
 	gl.disable( gl.BLEND );
 }

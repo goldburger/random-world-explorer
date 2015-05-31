@@ -71,6 +71,7 @@ function initSkybox() {
 function drawSkybox() {
 
     gl.disableVertexAttribArray( positionLoc );
+    gl.disableVertexAttribArray( texCoordLoc );
     gl.enableVertexAttribArray( threePositionLoc );
 
     gl.activeTexture(gl.TEXTURE4);
@@ -87,16 +88,17 @@ function drawSkybox() {
     gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
     gl.enable(gl.DEPTH_TEST);
     gl.drawArrays(gl.TRIANGLES, 0, skyboxVertexPositionBuffer.numItems);
-    gl.enable(gl.DEPTH_TEST);
+    gl.disable(gl.DEPTH_TEST);
     gl.disable( gl.BLEND );
 
     gl.uniform4fv(colorLoc, [ 1.0, 1.0, 1.0, 1.0 ]);
-    gl.uniform1i(useTextureLoc, true);
+    gl.uniform1i(useTextureLoc, false);
     gl.uniform1i(useLightingLoc, false);
     gl.uniform1i(useThreePositionLoc, true);
     gl.uniform1i(useSkyboxLoc, true);
 
     gl.disableVertexAttribArray( threePositionLoc );
+    gl.enableVertexAttribArray( texCoordLoc );
     gl.enableVertexAttribArray( positionLoc );
 
 }

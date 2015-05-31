@@ -108,7 +108,7 @@ function drawTerrain()
 	gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
 	gl.enable(gl.DEPTH_TEST);
     gl.drawElements(gl.TRIANGLE_STRIP, terrainIndexBuffer.numItems, gl.UNSIGNED_SHORT, 0);	
-    gl.enable(gl.DEPTH_TEST);
+    gl.disable(gl.DEPTH_TEST);
 	gl.disable( gl.BLEND );
 
     gl.disableVertexAttribArray( threePositionLoc );
