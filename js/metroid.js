@@ -7,7 +7,7 @@ var freeAim = false;
 var colorLoc, modelLoc, cameraLoc, projectionLoc;
 var cameraAzimuth, cameraAltitude, cameraTransform;
 var positionLoc, texCoordLoc, normalLoc;
-var useTextureLoc, useLightingLoc, useThreePositionLoc, useSkyboxLoc;
+var useTextureLoc, useLightingLoc, useThreePositionLoc;
 var near = 0.1;
 var far = 1000;
 var startingCamera, resetCamera;
@@ -57,7 +57,6 @@ function keyPress(event)
 	}
 }
 
-var img = new Array(6);
 function initTexture(image, index)
 {
     var curTexture = gl.createTexture();
@@ -75,45 +74,18 @@ function initTexture(image, index)
 		case 3:
 			gl.activeTexture(gl.TEXTURE3);
 			break;
-
-        case 4: case 5: case 6: case 7: case 8:
-            img[index - 4] = image;
-            break;
-        case 9:
-            img[5] = image;
-			gl.activeTexture(gl.TEXTURE4);
-			break;
 	}
-
-    if (index < 4) {
-        gl.bindTexture(gl.TEXTURE_2D, curTexture);
-        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-        gl.generateMipmap(gl.TEXTURE_2D);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    }
-    else if (index == 9) { // For skybox texturing
-        gl.bindTexture(gl.TEXTURE_CUBE_MAP, curTexture);
-        var targets = [
-            gl.TEXTURE_CUBE_MAP_POSITIVE_X, gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
-            gl.TEXTURE_CUBE_MAP_POSITIVE_Y, gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
-            gl.TEXTURE_CUBE_MAP_POSITIVE_Z, gl.TEXTURE_CUBE_MAP_NEGATIVE_Z
-        ];
-        for (var j = 0; j < 6; j++)
-        {
-			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-            gl.texImage2D(targets[j], 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img[j]);
-            gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        }
-        gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
-    }
+    gl.bindTexture( gl.TEXTURE_2D, curTexture );
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.texImage2D( gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image );
+    gl.generateMipmap( gl.TEXTURE_2D );
+    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR );
+    gl.texParameteri( gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR );
 }
 
-function toggleAiming(event)
+function enableAiming(event)
 {
-	freeAim = !freeAim;
+	freeAim = true;
 	aim(event);
 }
 
@@ -196,10 +168,9 @@ window.onload = function init()
 
 	initHUD();
 	initCannon();
-
+	
+    initTexture(document.getElementById("texImage4"), 3);
 	initTerrain();
-
-    initSkybox();
 	
 	colorLoc = gl.getUniformLocation( program, "fColor" );
     modelLoc = gl.getUniformLocation( program, "modelTransform" );
@@ -208,8 +179,7 @@ window.onload = function init()
 	useTextureLoc = gl.getUniformLocation(program, "useTexture");
 	useLightingLoc = gl.getUniformLocation(program, "useLighting");
 	useThreePositionLoc = gl.getUniformLocation(program, "useThreePosition");
-	useSkyboxLoc = gl.getUniformLocation(program, "useSkybox");
-
+	
 	dummyLightingUniforms();
 	
 	startingCamera = mult(translate(0, 0, -5), mat4());
@@ -230,11 +200,11 @@ window.onload = function init()
 	
 	document.onkeydown = keyPress;
 	
-	canvas.onclick = toggleAiming;
+	canvas.onclick = enableAiming;
 	canvas.onmousemove = aim;
 
     render();
-};
+}
 
 function drawCrosshair()
 {
@@ -252,7 +222,6 @@ function drawCrosshair()
 	gl.uniform1i(useTextureLoc, false);
 	gl.uniform1i(useLightingLoc, false);
 	gl.uniform1i(useThreePositionLoc, false);
-    gl.uniform1i(useSkyboxLoc, false);
 	
 	gl.drawArrays( gl.LINES, 0, 4);
 	
@@ -290,8 +259,7 @@ function render()
 	}
 	
 	//drawCrosshair();
-	drawTerrain();
-    drawSkybox();
+	renderTerrain();
 	drawCannon();	
 	drawHUD();
 	
