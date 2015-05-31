@@ -113,7 +113,6 @@ function initTexture(image, index)
         for (var j = 0; j < 6; j++)
         {
 			gl.bindTexture(gl.TEXTURE_CUBE_MAP, skyboxTexture);
-			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
             gl.texImage2D(targets[j], 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img[j]);
             gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
             gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -233,7 +232,7 @@ window.onload = function init()
 	scrollingDown = false;
 	
 	// TODO: Change when altering terrain shape, size, layout
-	cameraTransform = mult(translate(0, -10, 0), cameraTransform);
+	cameraTransform = mult(translate(-128, -10, -128), cameraTransform);
 	cameraTransform = mult( rotate(135, vec3(0, 1, 0)), cameraTransform );
 	cameraAzimuth = 135;
 	cameraAltitude = 0;

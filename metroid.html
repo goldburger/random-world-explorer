@@ -30,22 +30,18 @@
 		<img id = "texImage" src ="img/Combat Visor 512.png" hidden></img>
 		<img id = "texImage2" src ="img/Cannon Texture 512 Flipped.png" hidden></img>
 		<img id = "texImage3" src ="img/Cannon Middle Texture.jpg" hidden></img>
-		<img id = "texImage4" src ="img/mud.jpg" hidden></img>
 
-<!--
-		<img id = "texImage5" src = "img/right.jpg" hidden></img>
-		<img id = "texImage6" src = "img/left.jpg" hidden></img>
-		<img id = "texImage7" src = "img/top.jpg" hidden></img>
-		<img id = "texImage8" src = "img/bottom.jpg" hidden></img>
-		<img id = "texImage9" src = "img/back.jpg" hidden></img>
-		<img id = "texImage10" src = "img/front.jpg" hidden></img>
--->
-		<img id = "texImage5" src = "img/posx.jpg" hidden></img>
-		<img id = "texImage6" src = "img/negx.jpg" hidden></img>
-		<img id = "texImage7" src = "img/posy.jpg" hidden></img>
-		<img id = "texImage8" src = "img/negy.jpg" hidden></img>
-		<img id = "texImage9" src = "img/posz.jpg" hidden></img>
-		<img id = "texImage10" src = "img/negz.jpg" hidden></img>
+		<!-- Terrain texture always matches bottom.jpg of skybox -->
+		<img id = "texImage4" src ="img/1/bottom.jpg" hidden></img>
+
+		<!-- Skybox textures -->
+		<img id = "texImage5" src = "img/1/right.jpg" hidden></img>
+		<img id = "texImage6" src = "img/1/left.jpg" hidden></img>
+		<img id = "texImage7" src = "img/1/bottom.jpg" hidden></img>
+		<img id = "texImage8" src = "img/1/top.jpg" hidden></img>
+		<img id = "texImage9" src = "img/1/back.jpg" hidden></img>
+		<img id = "texImage10" src = "img/1/front.jpg" hidden></img>
+
 		<div class="how">
 			<h1>How to Play</h1>
 			<p>Move: W A S D</p>
@@ -190,7 +186,7 @@ uniform samplerCube skybox;
 
 void main()
 {
-	gl_FragColor = textureCube(skybox, vCoords);
+	gl_FragColor = textureCube(skybox, -vCoords);
 }
 </script>
 
