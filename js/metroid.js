@@ -30,7 +30,6 @@ function keyPress(event)
 			cameraAzimuth = 135;
 			cameraAltitude = 0;
 			break;
-		
 		case 87: // W
 			cameraTransform = mult(rotate(-cameraAltitude, vec3(1, 0, 0)), cameraTransform);
 			cameraTransform = mult( translate(0, 0, 0.5), cameraTransform );
@@ -51,7 +50,36 @@ function keyPress(event)
 			cameraTransform = mult( translate(-0.5, 0, 0), cameraTransform );
 			cameraTransform = mult(rotate(cameraAltitude, vec3(1, 0, 0)), cameraTransform);	
 			break;
-		
+		case 48:
+			changeSkybox(1);
+			break;
+		case 49:
+			changeSkybox(2);
+			break;
+		case 50:
+			changeSkybox(3);
+			break;
+		case 51:
+			changeSkybox(4);
+			break;
+		case 52:
+			changeSkybox(5);
+			break;
+		case 53:
+			changeSkybox(6);
+			break;
+		case 54:
+			changeSkybox(7);
+			break;
+		case 55:
+			changeSkybox(8);
+			break;
+		case 56:
+			changeSkybox(9);
+			break;
+		case 57:
+			changeSkybox(10);
+			break;
 		default:
 			break;
 	}

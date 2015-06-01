@@ -94,3 +94,16 @@ function drawSkybox()
  
 	gl.useProgram(program);
 }
+
+function changeSkybox(ind) {
+    var first = "img/" + ind + "/";
+    document.getElementById('texImage4').src=first+'bottom.jpg';
+    document.getElementById('texImage5').src=first+'right.jpg';
+    document.getElementById('texImage6').src=first+'left.jpg';
+    document.getElementById('texImage7').src=first+'bottom.jpg';
+    document.getElementById('texImage8').src=first+'top.jpg';
+    document.getElementById('texImage9').src=first+'back.jpg';
+    document.getElementById('texImage10').src=first+'front.jpg';
+    initSkybox();
+    drawSkybox();
+}
