@@ -197,7 +197,8 @@ function aim(event)
 		var w = window.innerWidth;
 		console.log(canvas.width/10);
 		console.log(x+ (w-canvas.width)/2);
-		if (x - (w-canvas.width)/2 < canvas.width/10)
+		x = x  - (w-canvas.width)/2;
+		if (x < canvas.width/10)
 		{
 			scrollingLeft = true;
 		}
