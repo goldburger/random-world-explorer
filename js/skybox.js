@@ -154,6 +154,8 @@ function onChangeLoad() {
     if (img1load && img2load && img3load && img4load 
         && img5load && img6load && img7load) {
         initSkybox();
+        initTerrain();
+        drawTerrain();
         drawSkybox();
     }
 }
