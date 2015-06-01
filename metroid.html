@@ -1,0 +1,235 @@
+<html>
+	<head>
+		<title>174A Final Project</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<link rel="stylesheet" href="main.css" type="text/css">
+
+		<!-- JavaScript -->
+		<script src="//cdn.jsdelivr.net/vivus/0.2.1/vivus.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/1.1.26/howler.min.js"></script>
+		<script type="text/javascript" src="js/util/webgl-utils.js"></script>
+		<script type="text/javascript" src="js/util/initShaders.js"></script>
+		<script type="text/javascript" src="js/util/MV.js"></script>
+		<script type="text/javascript" src="js/metroid.js"></script>
+		<script type="text/javascript" src="js/cannon-hud.js"></script>
+		<script type="text/javascript" src="js/simplexNoise.js"></script>
+		<script type="text/javascript" src="js/terrain.js"></script>
+		<script type="text/javascript" src="js/skybox.js"></script>
+		
+		<script type="text/javascript" src="js/webgl-obj-loader.js"></script>
+		<script type="text/javascript" src="js/Shape.js"></script>
+
+	</head>
+
+	<body bgcolor="#DDD">
+		<a href="#" onclick="document.getElementById('start').style.display='none';intro.stop();sound.play();return false;">
+			<div class="start" id="start">
+				<h1>Shooting Practice</h1>
+				<div id="icon"></div>
+				<p>Click to begin</p>
+			</div>
+		</a>
+		<canvas id="gl-canvas" width="900" height="506">
+		Oops ... your browser doesn't support the HTML5 canvas element
+		</canvas>
+		<img id = "texImage" src ="img/Combat Visor 512.png" hidden></img>
+		<img id = "texImage2" src ="img/Cannon Texture 512 Flipped.png" hidden></img>
+		<img id = "texImage3" src ="img/Cannon Middle Texture.jpg" hidden></img>
+
+		<!-- Terrain texture always matches bottom.jpg of skybox -->
+		<img id = "texImage4" src ="img/1/bottom.jpg" hidden></img>
+
+		<!-- Skybox textures -->
+		<img id = "texImage5" src = "img/1/right.jpg" hidden></img>
+		<img id = "texImage6" src = "img/1/left.jpg" hidden></img>
+		<img id = "texImage7" src = "img/1/bottom.jpg" hidden></img>
+		<img id = "texImage8" src = "img/1/top.jpg" hidden></img>
+		<img id = "texImage9" src = "img/1/back.jpg" hidden></img>
+		<img id = "texImage10" src = "img/1/front.jpg" hidden></img>
+
+		<div class="how">
+			<h1>How to Play</h1>
+			<p>Move: W A S D</p>
+			<p>Aim: Mouse (enable initally with click)</p>
+			<p>Shoot: Mouse Click</p>
+			<p>Change Environment: Number keys</p>
+			<p>Mute Music: M</p>
+		</div>
+		<footer>CS 174A Final Project: Matt Goldberg, Zoe Xi, Shobhit Garg, Neil Bedi</footer>
+	</body>
+
+	<script id="vertex-shader" type="x-shader/x-vertex">
+
+precision mediump float;
+
+attribute vec4 vPosition;
+attribute vec3 threePosition;
+attribute vec2 vTexCoord;
+attribute vec4 vNormal;
+
+varying vec2 fTexCoord;
+
+uniform mat4 projectionTransform;
+uniform mat4 cameraTransform;
+uniform mat4 modelTransform;
+uniform bool useLighting;
+uniform bool useThreePosition;
+uniform bool useSkybox;
+
+uniform vec4 ambientProduct;
+uniform vec4 diffuseProduct;
+uniform vec4 specularProduct;
+uniform vec4 lightPosition;
+uniform float shininess;
+varying vec3 N, L, E;
+varying vec4 varyingColor;
+
+void main()
+{
+	if (useLighting == true)
+	{
+		vec3 pos = (modelTransform * vPosition).xyz;
+
+		if (lightPosition.w == 0.0)
+			L = normalize(lightPosition.xyz);
+		else
+			L = normalize( lightPosition.xyz - pos );
+
+		E = -normalize(pos);
+		N = normalize( (modelTransform * vNormal).xyz);
+	}
+	if (useThreePosition == true)
+	{
+		gl_Position = projectionTransform * cameraTransform * modelTransform * vec4(threePosition, 1.0);
+
+		fTexCoord = vTexCoord * 80.0;
+
+	}
+	else
+	{
+		fTexCoord = vTexCoord;
+		gl_Position = projectionTransform * cameraTransform * modelTransform * vPosition;
+	}
+}
+</script>
+
+<script id="vertex-shader-sky" type="x-shader/x-vertex">
+
+precision mediump float;
+
+attribute vec3 threePosition;
+
+uniform mat4 projectionTransform;
+uniform mat4 cameraTransform;
+uniform mat4 modelTransform;
+
+varying vec3 vCoords;
+
+void main()
+{
+	gl_Position = projectionTransform * cameraTransform * modelTransform * vec4(threePosition, 1.0);
+	vCoords = threePosition;
+}
+</script>
+
+	<script id="fragment-shader" type="x-shader/x-fragment">
+
+precision mediump float;
+
+varying vec2 fTexCoord;
+
+uniform sampler2D texture;
+uniform vec4 fColor;
+uniform bool useTexture;
+uniform bool useLighting;
+uniform bool useSkybox;
+
+uniform vec4 ambientProduct;
+uniform vec4 diffuseProduct;
+uniform vec4 specularProduct;
+uniform vec4 lightPosition;
+uniform float shininess;
+varying vec3 N, L, E;
+varying vec4 varyingColor;
+
+void main()
+{
+	if (useLighting == true && useTexture == true)
+	{
+		vec4 phongColor;
+
+		vec3 H = normalize( L + E );
+		vec4 ambient = ambientProduct;
+
+		float Kd = max( dot(L, N), 0.0 );
+		vec4  diffuse = Kd * diffuseProduct;
+
+		float Ks = pow( max(dot(N, H), 0.0), shininess );
+		vec4  specular = Ks * specularProduct;
+
+		if ( dot(L, N) < 0.0 )
+			specular = vec4(0.0, 0.0, 0.0, 1.0);
+
+		phongColor = ambient + diffuse + specular;
+		phongColor.a = 1.0;
+
+		gl_FragColor = phongColor * texture2D( texture, fTexCoord );
+	}
+	else if (useTexture == true)
+	{
+		gl_FragColor = fColor * texture2D( texture, fTexCoord );
+	}
+	else
+	{
+		vec4 phongColor;
+
+		vec3 H = normalize( L + E );
+		vec4 ambient = ambientProduct;
+
+		float Kd = max( dot(L, N), 0.0 );
+		vec4  diffuse = Kd * diffuseProduct;
+
+		float Ks = pow( max(dot(N, H), 0.0), shininess );
+		vec4  specular = Ks * specularProduct;
+
+		if ( dot(L, N) < 0.0 )
+			specular = vec4(0.0, 0.0, 0.0, 1.0);
+
+		phongColor = ambient + diffuse + specular;
+		phongColor.a = 1.0;
+
+		gl_FragColor = vec4(N,1.0);////phongColor;vec4(1,0,0,1);//
+		//gl_FragColor = fColor;
+	}
+}
+</script>
+
+<script id="fragment-shader-sky" type="x-shader/x-fragment">
+
+precision mediump float;
+
+varying vec3 vCoords;
+uniform samplerCube skybox;
+
+void main()
+{
+	gl_FragColor = textureCube(skybox, -vCoords);
+}
+</script>
+
+<script>
+	var intro = new Howl({
+	  urls: ['sounds/Samus Intro Fanfare.mp3'],
+	  loop: true,
+	  volume: 0.5
+	}).play();
+	var sound = new Howl({
+	  urls: ['sounds/Tallon Overworld Depths.mp3'],
+	  loop: true,
+	  autoplay: false,
+	  volume: 0.5
+	});
+    new Vivus('icon', {type: 'async', duration: 200, file: '/img/icon.svg'});
+ </script>
+
+</html>
