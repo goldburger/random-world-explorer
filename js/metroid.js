@@ -24,11 +24,7 @@ var vertices = [
 
 var playMusic = true;
 
-var sound = new Howl({
-  urls: ['sounds/sound.mp3', 'sound.ogg', 'sound.wav'],
-  loop: true,
-  volume: 0.5
-}).play();
+
 
 var laser = new Howl({
 	urls: ['sounds/laser.mp3'],
@@ -199,7 +195,9 @@ function aim(event)
 		var x = event.clientX;
 		var y = event.clientY;
 		var w = window.innerWidth;
-		if (x < canvas.width/10)
+		console.log(canvas.width/10);
+		console.log(x+ (w-canvas.width)/2);
+		if (x - (w-canvas.width)/2 < canvas.width/10)
 		{
 			scrollingLeft = true;
 		}
