@@ -1,4 +1,4 @@
-// References:
+// Helpful tutorials about skyboxes:
 //
 // https://youtu.be/_Ix5oN8eC1E?list=PLRIWtICgwaX0u7Rf9zkZhLoLuZVfUksDP
 // http://math.hws.edu/eck/cs424/notes2013/19_GLSL.html
@@ -53,7 +53,7 @@ var skyboxVertices = [
 var skyboxVertexPositionBuffer;
 
 function initSkybox() {
-
+    // Retrieve the textures for the skybox sides
     initTexture(document.getElementById("texImage5"), 4);
     initTexture(document.getElementById("texImage6"), 5);
     initTexture(document.getElementById("texImage7"), 6);
@@ -95,6 +95,7 @@ function drawSkybox()
 	gl.useProgram(program);
 }
 
+// Used to flip the environments
 var img1load, img2load, img3load, img4load, img5load, img6load, img7load;
 
 function changeSkybox(ind) {

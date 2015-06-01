@@ -1,4 +1,4 @@
-// Reference used to generate the terrain:
+// Super useful tutorial about flat terrains
 // https://www.youtube.com/watch?v=yNYwZMmgTJk&list=PLRIWtICgwaX0u7Rf9zkZhLoLuZVfUksDP&index=14
 
 var terrainVertexPositionBuffer;
@@ -8,11 +8,11 @@ var terrainIndexBuffer;
 var VERTEX_COUNT = 256;
 var SIZE = 4096;
 
-var terrainCount = VERTEX_COUNT * VERTEX_COUNT;
+var terrainCount    = VERTEX_COUNT * VERTEX_COUNT;
 var terrainVertices = new Array(terrainCount * 3);
-var terrainNormals = new Array(terrainCount * 3);
+var terrainNormals  = new Array(terrainCount * 3);
 var terrainTextureCoords = new Array(terrainCount*2);
-var terrainIndices = new Array(6*(VERTEX_COUNT-1)*(VERTEX_COUNT-1));
+var terrainIndices  = new Array(6*(VERTEX_COUNT-1)*(VERTEX_COUNT-1));
 
 var simplexTerrain = new SimplexNoise(12345);
 
@@ -24,8 +24,10 @@ function initTerrain() {
     // Generates the terrain vertices and texture coordinates so that
     // we can load the mesh in as triangle strips
     var vertexPointer = 0;
-    for(var i=0; i<VERTEX_COUNT; i++){
-        for(var j=0; j<VERTEX_COUNT; j++){
+    for(var i=0; i<VERTEX_COUNT; i++)
+    {
+        for(var j=0; j<VERTEX_COUNT; j++)
+        {
 			terrainVertices[vertexPointer*3] = j/(VERTEX_COUNT - 1.0) * SIZE;
             height = simplexTerrain.noise(j,i);
             terrainVertices[vertexPointer*3+1] = height * 5.0;	// y = height
@@ -41,14 +43,17 @@ function initTerrain() {
         }
     }
 
-    // Indices for the terrain vertices => triangle strips
+    // Indices for the terrain mesh => triangle strips
     var pointer = 0;
-    for(var gz=0; gz<VERTEX_COUNT-1; gz++){
-        for(var gx=0; gx<VERTEX_COUNT-1; gx++){
-            var topLeft = (gz*VERTEX_COUNT)+gx;
+    for(var gz=0; gz<VERTEX_COUNT-1; gz++)
+    {
+        for(var gx=0; gx<VERTEX_COUNT-1; gx++)
+        {
+            var topLeft  = (gz*VERTEX_COUNT)+gx;
             var topRight = topLeft + 1;
-            var bottomLeft = ((gz+1)*VERTEX_COUNT)+gx;
+            var bottomLeft  = ((gz+1)*VERTEX_COUNT)+gx;
             var bottomRight = bottomLeft + 1;
+
             terrainIndices[pointer++] = topLeft;
             terrainIndices[pointer++] = bottomLeft;
             terrainIndices[pointer++] = topRight;
