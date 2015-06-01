@@ -22,6 +22,14 @@ var vertices = [
 	vec4( 0, -.15, 0, 1.0 )
 ];
 
+var playMusic = true;
+
+var sound = new Howl({
+  urls: ['sounds/sound.mp3', 'sound.ogg', 'sound.wav'],
+  loop: true,
+  volume: 0.5
+}).play();
+
 var laser = new Howl({
 	urls: ['sounds/laser.mp3'],
 	volume: 0.7
@@ -85,6 +93,18 @@ function keyPress(event)
 		case 57:
 			changeSkybox(10);
 			break;
+		case 77:
+			if (playMusic) {
+				sound.mute();
+				playMusic = !playMusic;
+				break;
+			}
+			else {
+				sound.unmute();
+				playMusic = !playMusic;
+				break;
+			}
+			
 		default:
 			break;
 	}
