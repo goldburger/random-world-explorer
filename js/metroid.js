@@ -22,6 +22,11 @@ var vertices = [
 	vec4( 0, -.15, 0, 1.0 )
 ];
 
+var laser = new Howl({
+	urls: ['sounds/laser.mp3'],
+	volume: 0.7
+})
+
 function keyPress(event)
 {
 	switch (event.keyCode){
@@ -150,6 +155,15 @@ function initTexture(image, index)
     }
 }
 
+function click(event) {
+	if (!freeAim) {
+		enableAiming();
+	}
+	else {
+		laser.play();
+	}
+}
+
 function enableAiming(event)
 {
 	freeAim = true;
@@ -269,7 +283,7 @@ window.onload = function init()
 	
 	document.onkeydown = keyPress;
 	
-	canvas.onclick = enableAiming;
+	canvas.onclick = click;
 	canvas.onmousemove = aim;
 
     render();
