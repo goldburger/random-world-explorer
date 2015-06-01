@@ -41,4 +41,12 @@ Additional Comments:
 * blah blah
 
 #### Neil Bedi
-* blah blah
+* created functionality for changing skybox on number key
+* added background music with mute option
+* implemented sound effects for controls
+* used the [howler.js library](http://goldfirestudios.com/blog/104/howler.js-Modern-Web-Audio-Javascript-Library) for all music additions
+* stylized webpage with CSS
+* small fixes on player movement
+* used the nifty [vivus.js library](https://maxwellito.github.io/vivus/) for animating the start logo
+* start logo svg credit: [Bryn Taylor](http://www.flaticon.com/authors/bryn-taylor)
+
