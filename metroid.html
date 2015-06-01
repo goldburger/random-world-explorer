@@ -18,9 +18,9 @@
 	</head>
 
 	<body bgcolor="#DDD">
-		<a href="#" onclick="document.getElementById('start').style.display='none';intro.stop();sound.play();return false;">
+		<a href="#" onclick="document.getElementById('start').style.display='none';return false;">
 			<div class="start" id="start">
-				<h1>Shooting Practice</h1>
+				<h1>Random World Explorer</h1>
 				<div id="icon"></div>
 				<p>Click to begin</p>
 			</div>
@@ -194,17 +194,20 @@ void main()
 </script>
 
 <script>
-	var intro = new Howl({
-	  urls: ['sounds/Samus Intro Fanfare.mp3'],
-	  loop: true,
-	  volume: 0.5
-	}).play();
 	var sound = new Howl({
 	  urls: ['sounds/Tallon Overworld Depths.mp3'],
 	  loop: true,
 	  autoplay: false,
 	  volume: 0.5
 	});
+
+	var intro = new Howl({
+	  urls: ['sounds/Samus Intro Fanfare.mp3'],
+	  loop: false,
+	  volume: 0.5,
+	  onend: sound.play()
+	}).play();
+
     new Vivus('icon', {type: 'async', duration: 200, file: '/img/icon.svg'});
  </script>
 
