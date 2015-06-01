@@ -27,7 +27,7 @@ Additional Comments:
 * debugging of skybox code
 
 #### Zoe (Zhaoyuan) Xi
-* in charge of all things environment and purty :3
+* in charge of all things environmental and purty :3
 * generated the terrain + skybox
 * created the triangle strips mesh used to generate the terrain
 * randomly generated the terrain's height using Ken Perlin's simplex noise algorithm
