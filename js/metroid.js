@@ -149,6 +149,8 @@ function initTexture(image, index)
             gl.texImage2D(targets[j], 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img[j]);
             gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
             gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+			gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
         }
         gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
 		gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
@@ -177,7 +179,7 @@ function aim(event)
 		var x = event.clientX;
 		var y = event.clientY;
 		var w = window.innerWidth;
-		if (x - (w-canvas.width)/2 < canvas.width/10)
+		if (x < canvas.width/10)
 		{
 			scrollingLeft = true;
 		}
@@ -305,7 +307,6 @@ function drawCrosshair()
 	gl.uniform1i(useTextureLoc, false);
 	gl.uniform1i(useLightingLoc, false);
 	gl.uniform1i(useThreePositionLoc, false);
-    //gl.uniform1i(useSkyboxLoc, false);
 	
 	gl.drawArrays( gl.LINES, 0, 4);
 	
