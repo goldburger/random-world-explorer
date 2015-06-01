@@ -195,8 +195,8 @@ function aim(event)
 		var x = event.clientX;
 		var y = event.clientY;
 		var w = window.innerWidth;
-		console.log(canvas.width/10);
-		console.log(x+ (w-canvas.width)/2);
+		//console.log(canvas.width/10);
+		//console.log(x+ (w-canvas.width)/2);
 		x = x  - (w-canvas.width)/2;
 		if (x < canvas.width/10)
 		{
