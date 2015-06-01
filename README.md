@@ -1,7 +1,7 @@
 # Title?!?!?
 
 ## Final project for CS 174A, Introduction to Computer Graphics, UCLA Spring 2015
-### Created by Matthew Goldberg, Zoe (Zhaoyuan Xi), Shobhit Garg, Neil Bedi
+### Created by Matthew Goldberg, Zoe (Zhaoyuan) Xi, Shobhit Garg, Neil Bedi
 
 [SNAZZY INTRODUCTION HELP PLS!!]
 - The proposal described intended advanced topics of generating terrain height using noise function, along with implementing collision detection for cannon shots with terrain. Fully implemented advanced features were terrain height using noise, and environment mapping using a cube map. Collision detection was attempted but not fully implemented.
@@ -27,15 +27,15 @@ Additional Comments:
 * debugging of skybox code
 
 #### Zoe (Zhaoyuan) Xi
-* in charge of all things environmental and purty :3
+* in charge of all things environmental
 * generated the terrain + skybox
 * created the triangle strips mesh used to generate the terrain
-* randomly generated the terrain's height using Ken Perlin's simplex noise algorithm
+* randomly generated the terrain's height using Ken Perlin's simplex noise algorithm. Resources used: ([1](http://staffwww.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf)) and ([2](https://gist.github.com/banksean/304522))
 * texturized the environment via linear and mipmap filters
 * implemented the surrounding skybox to encompass the player, camera, and terrain
 * created the skybox via cube mapping (environmental mapping); kudos to Matt for helping me debug the cubebox code
-* found the images used to generate the skybox: http://www.custommapmakers.org/skyboxes.php
-* used Youtube and stressed a lot to learn about terrain and skybox generation ahaha. Highly recommend ThinMatrix's GameDev Youtube channel for future CS 174A students :) 
+* found the [images](http://www.custommapmakers.org/skyboxes.php) used to generate the skybox
+* used Youtube and stressed a lot to learn about terrain and skybox generation ahaha. Highly recommend [ThinMatrix's] (https://www.youtube.com/user/ThinMatrix/playlists) GameDev Youtube channel for future CS 174A students :) 
 
 #### Shobhit Garg
 * blah blah
