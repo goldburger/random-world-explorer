@@ -95,15 +95,65 @@ function drawSkybox()
 	gl.useProgram(program);
 }
 
+var img1load, img2load, img3load, img4load, img5load, img6load, img7load;
+
 function changeSkybox(ind) {
     var first = "img/" + ind + "/";
-    document.getElementById('texImage4').src=first+'bottom.jpg';
-    document.getElementById('texImage5').src=first+'right.jpg';
-    document.getElementById('texImage6').src=first+'left.jpg';
-    document.getElementById('texImage7').src=first+'bottom.jpg';
-    document.getElementById('texImage8').src=first+'top.jpg';
-    document.getElementById('texImage9').src=first+'back.jpg';
-    document.getElementById('texImage10').src=first+'front.jpg';
-    initSkybox();
-    drawSkybox();
+
+    var img1 = document.getElementById('texImage4');
+    img1.src=first+'bottom.jpg';
+    img1.onload = function() {
+        img1load = true;
+        onChangeLoad();
+    }
+
+    var img2 = document.getElementById('texImage5')
+    img2.src=first+'right.jpg';
+    img2.onload = function() {
+        img2load = true;
+        onChangeLoad();
+    }
+
+    var img3 = document.getElementById('texImage6')
+    img3.src=first+'left.jpg';
+    img3.onload = function() {
+        img3load = true;
+        onChangeLoad();
+    }
+
+    var img4 = document.getElementById('texImage7')
+    img4.src=first+'bottom.jpg';
+    img4.onload = function() {
+        img4load = true;
+        onChangeLoad();
+    }
+
+    var img5 = document.getElementById('texImage8')
+    img5.src=first+'top.jpg';
+    img5.onload = function() {
+        img5load = true;
+        onChangeLoad();
+    }
+
+    var img6 = document.getElementById('texImage9')
+    img6.src=first+'back.jpg';
+    img6.onload = function() {
+        img6load = true;
+        onChangeLoad();
+    }
+
+    var img7 = document.getElementById('texImage10')
+    img7.src=first+'front.jpg';
+    img7.onload = function() {
+        img7load = true;
+        onChangeLoad();
+    }
+}
+
+function onChangeLoad() {
+    if (img1load && img2load && img3load && img4load 
+        && img5load && img6load && img7load) {
+        initSkybox();
+        drawSkybox();
+    }
 }
