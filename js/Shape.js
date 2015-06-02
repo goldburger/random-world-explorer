@@ -122,7 +122,7 @@ function sphere()
     
     
     
-    this.numTimesToSubdivide = 4;
+    this.numTimesToSubdivide = 3;
     
     this.triangle = function(a, b, c) 
         {

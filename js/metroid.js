@@ -311,8 +311,8 @@ window.onload = function init()
 
 
 
-/*
-    for(var i=0; i < 2; i++)
+
+    for(var i=0; i < 4; i++)
     {
     	var temp = translate(40,10,50);
     	temp = mult(temp, rotate(Math.random()*180, vec3(Math.random(), Math.random(), Math.random())) );
@@ -332,7 +332,7 @@ window.onload = function init()
     	deltaArrayTranslate.push(deltaTempTranslate);
     	deltaArrayRotate.push(deltaTempRotate);
     }
-*/
+
 
 	initHUD();
 	initCannon();
@@ -475,6 +475,7 @@ function render(time)
 
 	for(var i = 0; i < sphereArray.length; i++)
 	{
+		/*
 		//hit surface
 		if(sphereArray[i][1][3] < 0)
 		{
@@ -485,6 +486,7 @@ function render(time)
 				cameraTransformStarting = cameraTransform;
 			}
 		}
+		*/
 		for(var j = 0; j < sphereArray.length && i != j; j++)
 		{
 			/*
