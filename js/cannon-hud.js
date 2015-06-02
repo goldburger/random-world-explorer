@@ -4,6 +4,7 @@ var cannonDefault;
 var cannonAzimuth, cannonAltitude;
 
 var bottomCone, middleCone, ringCone, topCone;
+
 var cannonTransform = mat4();
 
 
@@ -165,10 +166,11 @@ cone.prototype.drawCone = function(modelTransform)
 	gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
 	gl.enable(gl.DEPTH_TEST);
 	gl.drawElements( gl.TRIANGLES, this.numIndices, gl.UNSIGNED_BYTE, 0 );
+
     
     //gl.disable(gl.DEPTH_TEST);
     gl.enable(gl.DEPTH_TEST);
-	
+
 	gl.disable( gl.BLEND );
 	
     gl.disableVertexAttribArray( normalLoc );
@@ -208,7 +210,9 @@ function initCannon()
 
 function drawCannon()
 {
+
 	cannonTransform = cannonDefault;
+
 	cannonTransform = mult(cannonTransform, rotate(cannonAzimuth, vec3(0, 0, 1)));
 	cannonTransform = mult(cannonTransform, rotate(cannonAltitude, vec3(1, 0, 0)));
 	
@@ -306,9 +310,10 @@ function drawHUD()
 	gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
 	gl.enable(gl.DEPTH_TEST);
 	gl.drawElements( gl.TRIANGLES, 6, gl.UNSIGNED_BYTE, 0 );
+
     
     //gl.disable(gl.DEPTH_TEST);
     gl.enable(gl.DEPTH_TEST);
-	
+
 	gl.disable( gl.BLEND );
 }

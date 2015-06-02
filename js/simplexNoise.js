@@ -1,5 +1,6 @@
 
 // Resource: https://gist.github.com/banksean/304522
+
 var SimplexNoise = function(r) {
     if (r == undefined) r = Math;
     this.grad3 = [[1,1,0],[-1,1,0],[1,-1,0],[-1,-1,0],

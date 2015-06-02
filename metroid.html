@@ -22,9 +22,9 @@
 	</head>
 
 	<body bgcolor="#DDD">
-		<a href="#" onclick="document.getElementById('start').style.display='none';intro.stop();sound.play();return false;">
+		<a href="#" onclick="document.getElementById('start').style.display='none';return false;">
 			<div class="start" id="start">
-				<h1>Shooting Practice</h1>
+				<h1>Random World Explorer</h1>
 				<div id="icon"></div>
 				<p>Click to begin</p>
 			</div>
@@ -52,7 +52,8 @@
 			<p>Move: W A S D</p>
 			<p>Aim: Mouse (enable initally with click)</p>
 			<p>Shoot: Mouse Click</p>
-			<p>Change Environment: Number keys</p>
+
+			<p>Change Environment: Number keys 0-9</p>
 			<p>Mute Music: M</p>
 		</div>
 		<footer>CS 174A Final Project: Matt Goldberg, Zoe Xi, Shobhit Garg, Neil Bedi</footer>
@@ -201,6 +202,7 @@ void main()
 		gl_FragColor = vec4(N,1.0);////phongColor;vec4(1,0,0,1);//
 		//gl_FragColor = fColor;
 	}
+
 }
 </script>
 
@@ -218,17 +220,20 @@ void main()
 </script>
 
 <script>
-	var intro = new Howl({
-	  urls: ['sounds/Samus Intro Fanfare.mp3'],
-	  loop: true,
-	  volume: 0.5
-	}).play();
 	var sound = new Howl({
 	  urls: ['sounds/Tallon Overworld Depths.mp3'],
 	  loop: true,
 	  autoplay: false,
 	  volume: 0.5
 	});
+
+	var intro = new Howl({
+	  urls: ['sounds/Samus Intro Fanfare.mp3'],
+	  loop: false,
+	  volume: 0.5,
+	  onend: sound.play()
+	}).play();
+
     new Vivus('icon', {type: 'async', duration: 200, file: '/img/icon.svg'});
  </script>
 

@@ -5,6 +5,7 @@ var program, programSky;
 var freeAim = false;
 var setBulletTime = false;
 
+
 var colorLoc, modelLoc, cameraLoc, projectionLoc;
 var cameraAzimuth, cameraAltitude, cameraTransform;
 var positionLoc, texCoordLoc, normalLoc;
@@ -199,7 +200,9 @@ function aim(event)
 		var w = window.innerWidth;
 		//console.log(canvas.width/10);
 		//console.log(x+ (w-canvas.width)/2);
-		if (x - (w-canvas.width)/2 < canvas.width/10)
+
+		x = x  - (w-canvas.width)/2;
+		if (x < canvas.width/10)
 		{
 			scrollingLeft = true;
 		}
@@ -251,8 +254,8 @@ window.onload = function init()
     if ( !gl ) { alert( "WebGL isn't available" ); }
 
     gl.viewport( 0, 0, canvas.width, canvas.height );
-    //gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
-    gl.clearColor( 0.0, 0.0, 0.0, 1.0 );
+
+    gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
     gl.enable(gl.DEPTH_TEST);
 
     program = initShaders( gl, "vertex-shader", "fragment-shader" );
@@ -311,7 +314,7 @@ window.onload = function init()
 
 
 
-
+/*
     for(var i=0; i < 4; i++)
     {
     	var temp = translate(40,10,50);
@@ -334,6 +337,7 @@ window.onload = function init()
     }
 
 
+*/
 	initHUD();
 	initCannon();
     initSkybox();
@@ -391,6 +395,7 @@ function drawCrosshair()
     gl.enableVertexAttribArray( texCoordLoc );
 }
 
+
 function render(time)
 {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -398,6 +403,7 @@ function render(time)
 
     var model_transform = translate(40,10,50);
     model_transform = mult(model_transform, scale(3,3,3));
+
 
 	var maxAltitude = 40;
 	if (scrollingLeft == true)
@@ -424,6 +430,7 @@ function render(time)
 		cameraTransform = mult(rotate(1, vec3(1, 0, 0)), cameraTransform);
 		cameraAltitude++;
 	}
+
 
 
 
@@ -459,7 +466,7 @@ function render(time)
 		    sphereArrayAlive[i] = true;
 		}
 
-		var temp = mult( cannonTransformStarting, translate(0, .1 * (time-timeFired) + 5, 0 ));
+		var temp = mult( cannonTransformStarting, translate(0, .1 * (time-timeFired) + 7, 0 ));
 		sphereArray[sphereArray.length - 1] = mult( inverse(cameraTransformStarting), temp);
 		m_sphere.draw(sphereArray[i]);
 	}
@@ -519,7 +526,6 @@ function render(time)
 			        	
 			      }
 			}
-
 
 		}
 	}
