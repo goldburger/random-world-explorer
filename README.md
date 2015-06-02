@@ -1,31 +1,8 @@
-<<<<<<< HEAD
-# team15-term-project
-
-###Disclaimer
-I am far from being done with the shooting functionality, so please don't be insulted by the inadequacies of this project! I am pushing it to github right now, prematurely, for everyone's peace of mind that we are making some progress in the right direction!
-
-# Shooting
--First mouse click enables aim. 
--Subsequent mouse clicks shoot a sphere. 
-
-There are random floating spheres we see in the distance when it starts. They are there because I am testing collision detection, and it seems to work! When you shoot a cannonball and it collides with one of these spheres, it disappears momentarily! Then it reappears somewhere else on the screen. 
-
-Currently the sphere has a texture similar to the cannon itself. Please feel free to change it. I haven't yet had a chance to give the cannonball a good texture but it will be great if someone wants to give that a shot!
-
-# Shape superclass
-The most difficult thing I have had to do, along with TA Garett's help, is to implement the Shape superclass, of which sphere is a child class. Shape takes as arguments four things - vertices, normals, indices, indexed - and does the drawing etc. 
-
-This basically gives us the ability to plot anything as long as we have the four given parameters! 
-
-If someone wants to find a cool target object (like a house or something), which should not be terribly difficult on the internet, please send me the four aforementioned attributes of it. Thanks! I plan to do the same myself when I get through this as well. 
-
-=======
-# Title?!?!?
+# Random World Explorer
 
 ## Final project for CS 174A, Introduction to Computer Graphics, UCLA Spring 2015
 ### Created by Matthew Goldberg, Zoe (Zhaoyuan) Xi, Shobhit Garg, Neil Bedi
 
-[SNAZZY INTRODUCTION HELP PLS!!]
 - The proposal described intended advanced topics of generating terrain height using noise function, along with implementing collision detection for cannon shots with terrain. Fully implemented advanced features were terrain height using noise, and environment mapping using a cube map. Collision detection was attempted but not fully implemented.
 
 Directions: Do we need this?
@@ -60,7 +37,12 @@ Additional Comments:
 * used Youtube and stressed a lot to learn about terrain and skybox generation ahaha. Highly recommend [ThinMatrix's] (https://www.youtube.com/user/ThinMatrix/playlists) GameDev Youtube channel for future CS 174A students :) 
 
 #### Shobhit Garg
-* blah blah
+* in charge of the shooting functionality and collision detection
+* created a Shape superclass that accepts vertices and indices and computes normals and draws the image. This has the ability to draw spheres, cubes, and any shape from a file - all of which inherit from Shape.
+* created a framework to display object files. wrote an object loader that reads in vertices, indices, vertex normals; an object of type Shape is created using these and drawn. 
+* enabled shooting functionality - an energy beam is shot when player clicks the mouse. This energy beam follows the direction the cannon is facing and travels in a straight line.
+* enabled collision detection for the energy beam for intersection with the terrain.
+* credits: Garett Ridge, the TA. 
 
 #### Neil Bedi
 * created functionality for changing skybox on number key
@@ -71,5 +53,4 @@ Additional Comments:
 * small fixes on player movement
 * used the nifty [vivus.js library](https://maxwellito.github.io/vivus/) for animating the start logo
 * start logo svg credit: [Bryn Taylor](http://www.flaticon.com/authors/bryn-taylor)
->>>>>>> 2e1dd693bf76c961817b8f3a4603235cf48065bf
 
