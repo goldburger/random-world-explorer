@@ -81,12 +81,12 @@ function drawSkybox()
     gl.uniform1i(gl.getUniformLocation(programSky, "skybox"), 4);	
 
     gl.bindBuffer(gl.ARRAY_BUFFER, skyboxVertexPositionBuffer);
-    gl.vertexAttribPointer(skyPositionLoc, 3, gl.FLOAT, false, 0, 0);	
+    gl.vertexAttribPointer(skyPositionLoc, 3, gl.FLOAT, false, 0, 0);
 
 	gl.uniformMatrix4fv(gl.getUniformLocation( programSky, "modelTransform" ), false, flatten(mat4()));
     gl.uniformMatrix4fv(gl.getUniformLocation( programSky, "cameraTransform" ), false, flatten(cameraTransform));
     gl.uniformMatrix4fv(gl.getUniformLocation( programSky, "projectionTransform" ), false, flatten(perspective( 45.0, canvas.width/canvas.height, near, far )));
- 
+
     gl.enable( gl.BLEND );
     gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA );
     gl.enable(gl.DEPTH_TEST);

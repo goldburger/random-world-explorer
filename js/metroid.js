@@ -11,7 +11,7 @@ var cameraAzimuth, cameraAltitude, cameraTransform;
 var positionLoc, texCoordLoc, normalLoc;
 var useTextureLoc, useLightingLoc, useThreePositionLoc, useSkyboxLoc;
 var near = 0.1;
-var far = 1000;
+var far = 2000.0;
 var startingCamera, resetCamera;
 var scrollingLeft, scrollingRight, scrollingUp, scrollingDown;
 
@@ -168,7 +168,7 @@ function initTexture(image, index)
             gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
             gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 			gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-			gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+			gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR_MIPMAP_LINEAR);
         }
         gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
 		gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
